@@ -26,7 +26,7 @@ export default function LinkToolbar( props ) {
 				title: __( 'Link', 'block-editor-components' ),
 				isActive: url?.length > 0,
 				onClick: () => setShowLinkControl( ! showLinkControl ),
-			}
+			},
 		],
 		[ setShowLinkControl, showLinkControl, url ]
 	);

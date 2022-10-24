@@ -13,6 +13,6 @@ export default function useSetAttribute( attributeName, setAttributes, defaultVa
 		( value = defaultValue ) => setAttributes( {
 			[attributeName]: value,
 		} ),
-		[ attributeName, setAttributes ]
+		[ attributeName, defaultValue, setAttributes ]
 	);
 }

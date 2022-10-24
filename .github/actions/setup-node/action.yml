@@ -1,0 +1,28 @@
+name: Set up Node environment
+description: Set up the Node environment to perform various actions in subsequent workflows.
+
+inputs:
+  cache_version:
+    description: Cache version. Gets appended to the cache key and will therefore invalidate the cache if it changes.
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Get npm cache directory
+      id: npm-cache
+      shell: bash
+      run: echo "::set-output name=dir::$(npm config get cache)"
+
+    - name: Cache dependencies
+      id: cache-node-dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: node-${{ runner.os }}-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}-${{ inputs.cache_version }}

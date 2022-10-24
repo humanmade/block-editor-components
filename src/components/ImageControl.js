@@ -30,7 +30,12 @@ export default function ImageControl( props ) {
 	} = props;
 
 	return (
-		<BaseControl className={ className } help={ help } id={ id } label={ label }>
+		<BaseControl
+			className={ `${ className } ${ value ? 'has-image' : '' }`.trim() }
+			help={ help }
+			id={ id }
+			label={ label }
+		>
 			<MediaUploadCheck fallback={ () => ( value && <img alt="" src={ value } /> ) }>
 				<MediaUpload
 					allowedTypes={ allowedTypes }

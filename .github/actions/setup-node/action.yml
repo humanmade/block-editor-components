@@ -18,7 +18,7 @@ runs:
     - name: Get npm cache directory
       id: npm-cache
       shell: bash
-      run: echo "::set-output name=dir::$(npm config get cache)"
+      run: echo "{dir}={$(npm config get cache)}" >> $GITHUB_OUTPUT
 
     - name: Cache dependencies
       id: cache-node-dependencies

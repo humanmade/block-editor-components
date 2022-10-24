@@ -9,5 +9,6 @@ export { default as useDisallowedBlocks } from './hooks/useDisallowedBlocks';
 export { default as useMeta } from './hooks/useMeta';
 export { default as useRenderAppenderWithBlockLimit } from './hooks/useRenderAppenderWithBlockLimit';
 
+export * from './utils/images';
 export * from './utils/options';
 export * from './utils/variations';

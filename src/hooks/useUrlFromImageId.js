@@ -5,7 +5,7 @@ import { useSelect } from '@wordpress/data';
  *
  * @param {number} imageId - the image ID
  * @param {?string} imageSize - the thumbail size. Defaults to 'thumbnail'.
- * @returns {?string} - the image UL, if found.
+ * @returns {?string} - the image URL, if found.
  */
 export default function useUrlFromImageId( imageId, imageSize = 'thumbnail' ) {
 	return useSelect( select => {

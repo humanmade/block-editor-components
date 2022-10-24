@@ -13,7 +13,7 @@ import { __ } from '@wordpress/i18n';
 export default function FileControls( props ) {
 	const {
 		value,
-		onDeselect,
+		onChange,
 		...mediaUploadProps
 	} = props;
 
@@ -32,12 +32,13 @@ export default function FileControls( props ) {
 							<ToolbarButton
 								icon="editor-unlink"
 								label={ __( 'Deselect file', 'block-editor-components' ) }
-								onClick={ onDeselect }
+								onClick={ () => onChange( null ) }
 							/>
 						) }
 					</ToolbarGroup>
 				) }
 				value={ value }
+				onSelect={ onChange }
 			/>
 		</MediaUploadCheck>
 	);

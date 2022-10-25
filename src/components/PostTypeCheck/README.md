@@ -20,7 +20,7 @@ function MyComponent() {
 }
 ```
 
-Optionally, you can also specify fallback content to display, in case the current post type does not match the one specified:
+Optionally, you can also specify fallback content to display, in case the current post type does not match the one specified.
 
 ```js
 import { PostTypeCheck } from '@humanmade/block-editor-components';

@@ -1,6 +1,6 @@
 # PostTypeCheck
 
-The `PostTypeCheck` components allows for conditionally displaying content for a specified post type only.
+The `PostTypeCheck` component allows for conditionally displaying content for a specified post type only.
 If the current post type does not match the one specified, nothing is displayed.
 It is also possible to provide fallback content to display if the post type does not match.
 

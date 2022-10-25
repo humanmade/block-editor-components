@@ -6,7 +6,7 @@ import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
-import { createOptionsFromTerms } from '..';
+import { createOptionsFromTerms } from '../..';
 
 const DEFAULT_OPTION = {
 	label: '',

@@ -1,0 +1,37 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+
+updates:
+  # Enable version updates for Composer:
+  - package-ecosystem: "composer"
+    # Look for `composer.json` and `composer.lock` files in the `root` directory:
+    directory: "/"
+    # Create pull requests for updates (if any) once a week:
+    schedule:
+      interval: "weekly"
+    # Increase the version requirements for Composer only when required:
+    versioning-strategy: lockfile-only
+    # Allow up to 25 open pull requests for Composer dependencies.
+    open-pull-requests-limit: 25
+    # Prefix all commit messages with "Composer":
+    commit-message:
+      prefix: "Composer"
+
+  # Enable version updates for npm:
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `package-lock.json` files in the `root` directory:
+    directory: "/"
+    # Create pull requests for updates (if any) once a week:
+    schedule:
+      interval: "weekly"
+    # Increase the version requirements for npm only when required:
+    versioning-strategy: lockfile-only
+    # Allow up to 25 open pull requests for npm dependencies.
+    open-pull-requests-limit: 25
+    # Prefix all commit messages with "npm":
+    commit-message:
+      prefix: "npm"

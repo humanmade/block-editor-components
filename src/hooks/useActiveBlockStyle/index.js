@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useBlockStyles } from '..';
+import { useBlockStyles } from '../..';
 
 const pattern = /^is-style-/;
 

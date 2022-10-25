@@ -7,6 +7,7 @@ import { useSelect } from '@wordpress/data';
  *
  * @param {object} props - Component props.
  * @param {ReactNode} props.children - Children to render.
+ * @param {string} props.postType - Post type slug.
  * @param {ReactNode} [props.fallback=null] - Optional. Fallback component to render. Defaults to null.
  * @returns {ReactNode} Component.
  */

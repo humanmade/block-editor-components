@@ -16,7 +16,7 @@ export default function useBlockStyles( blockName ) {
 
 	return useMemo(
 		() => ( {
-			blockStyles: blockStyles.map( ( { name } ) => name ),
+			blockStyles,
 			defaultStyle: blockStyles.find( ( { isDefault } ) => isDefault )?.name ?? '',
 		} ),
 		[ blockStyles ]

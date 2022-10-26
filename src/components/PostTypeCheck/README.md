@@ -11,7 +11,7 @@ For a minimum working setup, all you need to do is wrap some content in `PostTyp
 ```js
 import { PostTypeCheck } from '@humanmade/block-editor-components';
 
-function MyComponent() {
+function BlockEdit() {
 	return (
 		<PostTypeCheck postType="page">
 			<p>This is a page!</p>
@@ -24,8 +24,9 @@ Optionally, you can also specify fallback content to display, in case the curren
 
 ```js
 import { PostTypeCheck } from '@humanmade/block-editor-components';
+import XYZ from 'xyz';
 
-function MyComponent() {
+function BlockEdit() {
 	return (
 		<PostTypeCheck
 			fallback={ <p>Sorry, XYZ is only supported on pages.</p> }
@@ -38,8 +39,6 @@ function MyComponent() {
 ```
 
 ## Props
-
-The only required prop, in addition to the content wrapped by `PostTypeCheck`, is `postType`, which is the post type slug to display the wrapped content for.
 
 ### `children`
 

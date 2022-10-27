@@ -12,8 +12,10 @@ export { default as useBlockStyles } from './hooks/useBlockStyles';
 export { default as useDisallowedBlocks } from './hooks/useDisallowedBlocks';
 export { default as useMeta } from './hooks/useMeta';
 export { default as useRenderAppenderWithBlockLimit } from './hooks/useRenderAppenderWithBlockLimit';
+export { default as useSelectBlock } from './hooks/useSelectBlock';
 export { default as useSetAttribute } from './hooks/useSetAttribute';
 
+export * from './utils/blocks';
 export * from './utils/images';
 export * from './utils/options';
 export * from './utils/variations';

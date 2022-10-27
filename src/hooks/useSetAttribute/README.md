@@ -9,6 +9,7 @@ For a minimum working setup, all you need to do is pass the attribute name and t
 
 ```js
 import { useSetAttribute } from '@humanmade/block-editor-components';
+import { PlainText } from '@wordpress/block-editor';
 
 function BlockEdit( props ) {
 	const { attributes, setAttributes } = props;
@@ -29,6 +30,7 @@ Optionally, you can also specify a default value to use.
 
 ```js
 import { useSetAttribute } from '@humanmade/block-editor-components';
+import { PlainText } from '@wordpress/block-editor';
 
 function BlockEdit() {
 	const { attributes, setAttributes } = props;
@@ -37,7 +39,7 @@ function BlockEdit() {
 	const setPriority = useSetAttribute( 'priority', setAttributes, 'medium' );
 
 	return (
-		<Priority
+		<PlainText
 			value={ priority }
 			onChange={ setPriority }
 		/>

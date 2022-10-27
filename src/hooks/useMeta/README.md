@@ -40,7 +40,7 @@ function BlockEdit() {
 }
 ```
 
-Please note that the default value will only be used if no value is supplied (i.e., `undefined`).
+Please note that the default value will only be used if no value is supplied (i.e., `undefined` or `null`).
 Any other falsy value such as an empty string or Boolean `false` will be used as is.
 
 ## Signature

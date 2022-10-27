@@ -18,7 +18,7 @@ export default function useDisallowedBlocks( disallowedBlocks ) {
 
 			// Filter out blocks that are only meant to be used as child blocks, otherwise these will show.
 			return registeredBlocks.filter( ( { name, parent } ) => (
-				typeof parent === 'undefined' && ! disallowedBlocks.includes( name )
+				! parent && ! disallowedBlocks.includes( name )
 			) ).map( ( { name } ) => name );
 		},
 		[ disallowedBlocks ]

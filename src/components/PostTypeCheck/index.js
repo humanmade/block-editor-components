@@ -8,7 +8,7 @@ import { useSelect } from '@wordpress/data';
  * @param {object} props - Component props.
  * @returns {ReactNode} Component.
  */
-export default function PostTypeSupportCheck( props ) {
+export default function PostTypeCheck( props ) {
 	const { postType } = props;
 
 	const currentPostType = useSelect(

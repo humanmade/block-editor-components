@@ -1,3 +1,4 @@
+export { default as ConditionalComponent } from './components/ConditionalComponent';
 export { default as FetchAllTermSelectControl } from './components/FetchAllTermSelectControl';
 export { default as FileControls } from './components/FileControls';
 export { default as ImageControl } from './components/ImageControl';

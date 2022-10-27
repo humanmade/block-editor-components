@@ -1,3 +1,18 @@
+import { select } from '@wordpress/data';
+
+/**
+ * For the given block name, return the first block found in the current post content.
+ *
+ * @param {string} blockName - Block name.
+ *
+ * @return {?object} Block, if found.
+ */
+export function findBlockByName( blockName ) {
+	const { getBlocks } = select( 'core/block-editor' );
+
+	return getBlocks().find( ( { name } ) => name === blockName );
+}
+
 /**
  * From the given blocks, return the first one that does not satisfy the given validation callback.
  *

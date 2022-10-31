@@ -4,8 +4,6 @@ The `FileControls` component allows for selecting a resource from the media libr
 Depending on a file having been selected, it will render a toolbar group with one or two buttons inside.
 This means that the component is intended to be used inside [`BlockControls`](https://github.com/WordPress/gutenberg/blob/trunk/packages/block-editor/src/components/block-controls/index.js).
 
-<div align="center">
-
 | ![file-controls--hover.png](../../../assets/images/file-controls--hover.png) |
 |:---:|
 | _`FileControls` component._ |
@@ -13,8 +11,6 @@ This means that the component is intended to be used inside [`BlockControls`](ht
 | ![file-controls--deselect.png](../../../assets/images/file-controls--deselect.png) |
 |:---:|
 | _`FileControls` component showing Deselect button._ |
-
-</div>
 
 ## Usage
 

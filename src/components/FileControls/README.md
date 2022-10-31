@@ -5,11 +5,11 @@ Depending on a file having been selected, it will render a toolbar group with on
 This means that the component is intended to be used inside [`BlockControls`](https://github.com/WordPress/gutenberg/blob/trunk/packages/block-editor/src/components/block-controls/index.js).
 
 | ![file-controls--hover.png](../../../assets/images/file-controls--hover.png) |
-|:---:|
+|---|
 | _`FileControls` component._ |
 
 | ![file-controls--deselect.png](../../../assets/images/file-controls--deselect.png) |
-|:---:|
+|---|
 | _`FileControls` component showing Deselect button._ |
 
 ## Usage

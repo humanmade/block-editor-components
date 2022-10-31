@@ -5,11 +5,11 @@ Internally, `LinkToolbar` is wrapping a [`LinkControl`](https://github.com/WordP
 It is also possible to mark the link to open in a new tab (where browser settings permit).
 
 | ![link-toolbar--hover.png](../../../assets/images/link-toolbar--hover.png) |
-|:---:|
+|---|
 | _`LinkToolbar` component._ |
 
 | ![link-toolbar--link-control-open.png](../../../assets/images/link-toolbar--link-control-open.png) |
-|:---:|
+|---|
 | _`LinkToolbar` component displaying nested `LinkControl` component._ |
 
 ## Usage

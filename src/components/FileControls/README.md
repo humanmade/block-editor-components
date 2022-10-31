@@ -6,11 +6,11 @@ This means that the component is intended to be used inside [`BlockControls`](ht
 
 | ![file-controls--hover.png](../../../assets/images/file-controls--hover.png) |
 |:---:|
-| _`FileControls` component. |
+| _`FileControls` component._ |
 
 | ![file-controls--deselect.png](../../../assets/images/file-controls--deselect.png) |
 |:---:|
-| _`FileControls` component showing _Deselect_ button. |
+| _`FileControls` component showing Deselect button._ |
 
 ## Usage
 

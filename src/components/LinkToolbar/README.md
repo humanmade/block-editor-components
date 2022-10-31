@@ -4,13 +4,13 @@ The `LinkToolbar` component allows for linking a portion of content or other blo
 Internally, `LinkToolbar` is wrapping a [`LinkControl`](https://github.com/WordPress/gutenberg/blob/trunk/packages/block-editor/src/components/link-control/index.js), and thus allows for searching posts or archives, as well as providing a custom URL.
 It is also possible to mark the link to open in a new tab (where browser settings permit).
 
-|![link-toolbar--hover.png](../../../assets/images/link-toolbar--hover.png)|
+| ![link-toolbar--hover.png](../../../assets/images/link-toolbar--hover.png) |
 |:---:|
-|_`LinkToolbar` component._|
+| _`LinkToolbar` component._ |
 
-|![link-toolbar--link-control-open.png](../../../assets/images/link-toolbar--link-control-open.png)|
+| ![link-toolbar--link-control-open.png](../../../assets/images/link-toolbar--link-control-open.png) |
 |:---:|
-|_`LinkToolbar` component displaying nested `LinkControl` component._|
+| _`LinkToolbar` component displaying nested `LinkControl` component._ |
 
 ## Usage
 

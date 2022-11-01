@@ -4,5 +4,6 @@
 /.vscode
 /node_modules/
 /vendor/
+/dist
 
 !.gitkeep

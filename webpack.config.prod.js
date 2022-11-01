@@ -29,21 +29,15 @@ module.exports = presets.production( {
 		umdNamedDefine: true,
 		clean: true,
 	},
-	externals: {
-		...externals,
-		// Don't bundle react or react-dom
-		react: {
-			commonjs: 'react',
-			commonjs2: 'react',
-			amd: 'React',
-			root: 'React',
-		},
-		'react-dom': {
-			commonjs: 'react-dom',
-			commonjs2: 'react-dom',
-			amd: 'ReactDOM',
-			root: 'ReactDOM',
-		},
-	},
+	externals: Object.keys( externals ).reduce( ( carry, key ) => {
+		return {
+			...carry,
+			[ key ]: {
+				commonjs: key,
+				commonjs2: key,
+				amd: externals[ key ],
+				root: externals[ key ],
+			},
+		};
+	}, {} ),
 } );
-

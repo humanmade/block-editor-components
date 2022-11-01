@@ -63,7 +63,7 @@ function BlockEdit( props ) {
 ## Signature
 
 ```js
-// useRenderAppenderWithBlockLimit :: ( clientId: string, blockLimit: number, appender?: ReactNode ) => ?ReactNode|false
+// useRenderAppenderWithBlockLimit :: ( clientId: string, blockLimit: number, appender?: ReactNode ) => ?ReactNode | false
 const renderAppender = useRenderAppenderWithBlockLimit( clientId, blockLimit, appender );
 ```
 

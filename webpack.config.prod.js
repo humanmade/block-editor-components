@@ -29,6 +29,7 @@ module.exports = presets.production( {
 		umdNamedDefine: true,
 		clean: true,
 	},
+	// Externals provided by @humanmade/webpack-helpers are not in the correct format for commonJS.
 	externals: Object.keys( externals ).reduce( ( carry, key ) => {
 		return {
 			...carry,

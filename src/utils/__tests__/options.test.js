@@ -62,7 +62,7 @@ describe( 'createOptionFromPost', () => {
 		} );
 	} );
 
-	it( 'should use the given title prefix', () => {
+	it( 'should use the given prefix', () => {
 		const post = {
 			id: 42,
 			title: {
@@ -116,7 +116,7 @@ describe( 'createOptionFromTerm', () => {
 		} );
 	} );
 
-	it( 'should use the given name prefix', () => {
+	it( 'should use the given prefix', () => {
 		const term = {
 			id: 23,
 			name: 'Some Term',
@@ -259,6 +259,48 @@ describe( 'createOptionsFromPostsWithHierarchy', () => {
 		] );
 	} );
 
+	it( 'should use the given prefix', () => {
+		const posts = [
+			{
+				id: 1,
+				title: {
+					rendered: 'First Post',
+				},
+				children: [
+					{
+						id: 11,
+						title: {
+							rendered: 'First Child Post',
+						},
+						children: [
+							{
+								id: 111,
+								title: {
+									rendered: 'First Grandchild Post',
+								},
+							},
+						],
+					},
+				],
+			},
+		];
+
+		expect( createOptionsFromPostsWithHierarchy( posts, '~ ' ) ).toEqual( [
+			{
+				label: 'First Post',
+				value: 1,
+			},
+			{
+				label: '~ First Child Post',
+				value: 11,
+			},
+			{
+				label: '~ ~ First Grandchild Post',
+				value: 111,
+			},
+		] );
+	} );
+
 } );
 
 describe( 'createOptionsFromTerms', () => {
@@ -362,6 +404,42 @@ describe( 'createOptionsFromTermsWithHierarchy', () => {
 			{
 				label: 'Third Term',
 				value: 3,
+			},
+		] );
+	} );
+
+	it( 'should use the given prefix', () => {
+		const terms = [
+			{
+				id: 1,
+				name: 'First Term',
+				children: [
+					{
+						id: 11,
+						name: 'First Child Term',
+						children: [
+							{
+								id: 111,
+								name: 'First Grandchild Term',
+							},
+						],
+					},
+				],
+			},
+		];
+
+		expect( createOptionsFromTermsWithHierarchy( terms, '~ ' ) ).toEqual( [
+			{
+				label: 'First Term',
+				value: 1,
+			},
+			{
+				label: '~ First Child Term',
+				value: 11,
+			},
+			{
+				label: '~ ~ First Grandchild Term',
+				value: 111,
 			},
 		] );
 	} );

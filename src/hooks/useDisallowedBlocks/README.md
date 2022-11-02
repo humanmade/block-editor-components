@@ -54,3 +54,9 @@ The `useDisallowedBlocks` hook returns the list of allowed block names, given th
 ```js
 const allowedBlocks = useDisallowedBlocks( disallowedBlocks );
 ```
+
+## Dependencies
+
+The `useDisallowedBlocks` hook requires the following dependencies, which are expected to be available:
+
+- `@wordpress/blocks`

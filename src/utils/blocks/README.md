@@ -254,3 +254,9 @@ If no block was found, the function returns an empty array.
 ```js
 const validBlocks = findValidBlocks( blocks, isValid );
 ```
+
+## Dependencies
+
+The Block Utils require the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

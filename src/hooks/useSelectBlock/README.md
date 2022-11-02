@@ -50,3 +50,9 @@ const selectBlock = useSelectBlock();
 
 selectBlock( clientId );
 ```
+
+## Dependencies
+
+The `useSelectBlock` hook requires the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

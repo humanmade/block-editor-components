@@ -36,3 +36,10 @@ function BlockEdit() {
 ## Props
 
 The `PostTitleControl` component does not have any custom props, but you can pass anything that is supported by the nested [`RichText`](https://github.com/WordPress/gutenberg/blob/trunk/packages/block-editor/src/components/rich-text/index.js) component.
+
+## Dependencies
+
+The `PostTitleControl` component requires the following dependencies, which are expected to be available:
+
+- `@wordpress/block-editor`
+- `@wordpress/data`

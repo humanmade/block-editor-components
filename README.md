@@ -61,7 +61,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 
 ## Utils
 
-- [Blocks](src/utils/blocks)
-- [Images](src/utils/images)
-- [Options](src/utils/options)
-- [Variations](src/utils/variations)
+- [Block Utils](src/utils/blocks)
+- [Image Utils](src/utils/images)
+- [Option Utils](src/utils/options)
+- [Variation Utils](src/utils/variations)

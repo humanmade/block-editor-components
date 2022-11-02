@@ -392,3 +392,10 @@ The options data is intended to be used with `SelectControl`.
 ```js
 const options = createOptionsFromTermsWithHierarchy( terms, prefix, level );
 ```
+
+## Dependencies
+
+The Option Utils require the following dependencies, which are expected to be available:
+
+- `@wordpress/html-entities`
+- `@wordpress/i18n`

@@ -73,3 +73,9 @@ Passing `0` will disable the character restriction, which only really makes sens
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `number`                             | yes                                  | `0`                                  |
+
+## Dependencies
+
+The `PlainTextWithLimit` component requires the following dependencies, which are expected to be available:
+
+- `@wordpress/block-editor`

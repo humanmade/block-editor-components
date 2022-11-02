@@ -101,3 +101,9 @@ If the maximum number of blocks is reached, the hook will return `false`, preven
 ```js
 const renderAppender = useRenderAppenderWithBlockLimit( clientId, blockLimit );
 ```
+
+## Dependencies
+
+The `useRenderAppenderWithBlockLimit` hook requires the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

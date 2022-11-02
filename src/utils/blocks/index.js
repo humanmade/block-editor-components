@@ -4,8 +4,7 @@ import { select } from '@wordpress/data';
  * For the given block name, return the first block found in the current post content.
  *
  * @param {string} blockName - Block name.
- *
- * @return {?object} Block, if found.
+ * @returns {?object} Block, if found.
  */
 export function findBlockByName( blockName ) {
 	const { getBlocks } = select( 'core/block-editor' );
@@ -18,8 +17,7 @@ export function findBlockByName( blockName ) {
  *
  * @param {object[]} blocks - Blocks.
  * @param {Function} isValid - Validation callback.
- *
- * @return {?object} Invalid block, if found.
+ * @returns {?object} Invalid block, if found.
  */
 export function findInvalidBlock( blocks, isValid ) {
 	return blocks.find( ( block ) => ! isValid( block ) );
@@ -30,8 +28,7 @@ export function findInvalidBlock( blocks, isValid ) {
  *
  * @param {object[]} blocks - Blocks.
  * @param {Function} isValid - Validation callback.
- *
- * @return {object[]} Invalid blocks, if found.
+ * @returns {object[]} Invalid blocks, if found.
  */
 export function findInvalidBlocks( blocks, isValid ) {
 	return blocks.filter( ( block ) => ! isValid( block ) );
@@ -42,8 +39,7 @@ export function findInvalidBlocks( blocks, isValid ) {
  *
  * @param {object[]} blocks - Blocks.
  * @param {Function} isValid - Validation callback.
- *
- * @return {?object} Valid block, if found.
+ * @returns {?object} Valid block, if found.
  */
 export function findValidBlock( blocks, isValid ) {
 	return blocks.find( ( block ) => isValid( block ) );
@@ -54,8 +50,7 @@ export function findValidBlock( blocks, isValid ) {
  *
  * @param {object[]} blocks - Blocks.
  * @param {Function} isValid - Validation callback.
- *
- * @return {object[]} Valid blocks, if found.
+ * @returns {object[]} Valid blocks, if found.
  */
 export function findValidBlocks( blocks, isValid ) {
 	return blocks.filter( ( block ) => isValid( block ) );

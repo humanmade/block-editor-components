@@ -27,7 +27,7 @@ The recommended way to use the Block Editor Components package is to install as 
 Using npm:
 
 ```shell
-npm install --save-dev humanmade/block-editor-components
+npm install --save-dev @humanmade/block-editor-components
 ```
 
 Of course, you can also use Yarn, pnpm or any other package manager.

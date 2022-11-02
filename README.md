@@ -34,6 +34,7 @@ Of course, you can also use Yarn, pnpm or any other package manager.
 
 **Note:** As the Block Editor Components package provides a variety of components, hooks and utils that you usually don't all need for a given project, the package does **not** declare any `@wordpress/*` dependencies.
 This means that you need to ensure all dependency assets are declared and loaded.
+
 You can read about an individual component's dependencies in the relevant README file.
 One way to ensure all dependencies are loaded is to use the [`@wordpress/dependency-extraction-webpack-plugin`](https://github.com/WordPress/gutenberg/tree/trunk/packages/dependency-extraction-webpack-plugin) package.
 

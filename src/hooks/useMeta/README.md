@@ -78,3 +78,9 @@ const [ meta, setMeta ] = useMeta( metaKey );
 
 setMeta( newValue );
 ```
+
+## Dependencies
+
+The `useMeta` hook requires the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

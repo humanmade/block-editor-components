@@ -63,3 +63,9 @@ The post type slug that the wrapped content should be displayed for.
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `string`                             | yes                                  | `undefined`                          |
+
+## Dependencies
+
+The `PostTypeCheck` component requires the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

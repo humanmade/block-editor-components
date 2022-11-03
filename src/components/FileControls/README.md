@@ -80,3 +80,11 @@ The ID of the selected file, if any.
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `number`                             | yes                                  | `undefined`                          |
+
+## Dependencies
+
+The `FileControls` component requires the following dependencies, which are expected to be available:
+
+- `@wordpress/block-editor`
+- `@wordpress/components`
+- `@wordpress/i18n`

@@ -50,3 +50,9 @@ The `useActiveBlockStyle` hook returns the currently active block style for the 
 ```js
 const activeBlockStyle = useActiveBlockStyle( clientId );
 ```
+
+## Dependencies
+
+The `useActiveBlockStyle` hook requires the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

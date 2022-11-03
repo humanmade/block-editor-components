@@ -87,3 +87,11 @@ The URL to link to.
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `string`                             | yes                                  | `undefined`                          |
+
+## Dependencies
+
+The `LinkToolbar` component requires the following dependencies, which are expected to be available:
+
+- `@wordpress/block-editor`
+- `@wordpress/components`
+- `@wordpress/i18n`

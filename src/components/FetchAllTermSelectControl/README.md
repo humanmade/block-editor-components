@@ -161,3 +161,13 @@ The taxonomy slug.
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `string`                             | yes                                  | `undefined`                          |
+
+## Dependencies
+
+The `FetchAllTermSelectControl` component requires the following dependencies, which are expected to be available:
+
+- `@wordpress/api-fetch`
+- `@wordpress/components`
+- `@wordpress/data`
+- `@wordpress/i18n`
+- `@wordpress/url`

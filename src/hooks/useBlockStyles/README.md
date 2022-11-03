@@ -56,3 +56,9 @@ The `useBlockStyles` hook returns an object with the list of registered block st
 ```js
 const { blockStyles, defaultStyle } = useBlockStyles( blockName );
 ```
+
+## Dependencies
+
+The `useBlockStyles` hook requires the following dependencies, which are expected to be available:
+
+- `@wordpress/data`

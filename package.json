@@ -14,8 +14,7 @@
 		"name": "Human Made",
 		"url": "https://humanmade.com"
 	},
-	"main": "./dist/index.js",
-	"source": "./src/index.js",
+	"main": "dist/index.js",
 	"repository": "github:humanmade/block-editor-components",
 	"scripts": {
 		"lint": "eslint .",

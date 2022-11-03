@@ -33,6 +33,7 @@ module.exports = {
 				},
 			} ),
 		],
+		usedExports: false,
 	},
 	plugins: [
 		new DependencyExtractionPlugin(),

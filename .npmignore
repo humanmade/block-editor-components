@@ -4,4 +4,5 @@
 .gitignore
 .nvmrc
 .editorconfig
+babel.config.js
 webpack.config.prod.js

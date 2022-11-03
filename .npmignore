@@ -1,8 +1,7 @@
-.github
-.eslintrc.js
-.eslintignore
-.gitignore
-.nvmrc
+.github/
 .editorconfig
+.eslintignore
+.eslintrc.js
+.nvmrc
 babel.config.js
 webpack.config.prod.js

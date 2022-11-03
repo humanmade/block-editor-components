@@ -17,9 +17,9 @@
 	"main": "dist/index.js",
 	"repository": "github:humanmade/block-editor-components",
 	"scripts": {
+		"build": "webpack --config=webpack.config.prod.js",
 		"lint": "eslint .",
-		"test": "jest",
-		"build": "webpack --config=webpack.config.prod.js"
+		"test": "jest"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.19.6",

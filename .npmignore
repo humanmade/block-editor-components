@@ -8,3 +8,4 @@
 /.eslintrc.js
 /.nvmrc
 /babel.config.js
+/webpack.config.js

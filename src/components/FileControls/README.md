@@ -62,7 +62,7 @@ Please note that the `FileControls` component returns `null` if a previously sel
 
 ## Props
 
-The `FileControls` component does not have any custom props other than `value` and `onChange`, but you can pass anything that is supported by the nested [`RichText`](https://github.com/WordPress/gutenberg/blob/trunk/packages/block-editor/src/components/rich-text/index.js) component.
+The `FileControls` component does not have any custom props other than `value` and `onChange`, but you can pass anything that is supported by the nested [`MediaUpload`](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-editor/src/components/media-upload/index.js) component, except for `multiple` and `render`.
 
 ### `onChange`
 

@@ -2,13 +2,15 @@ import React, { ReactNode } from 'react';
 
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { BaseControl, Button } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
 const allowedTypes = [ 'image' ];
 
-const BUTTON_TEXT = __( 'Select image', 'block-editor-components' );
+const BUTTON_TEXT = __( 'Select Image', 'block-editor-components' );
 const MODAL_TITLE = __( 'Select Image', 'block-editor-components' );
 const REMOVE_BUTTON_TEXT = __( 'Remove image', 'block-editor-components' );
+const REPLACE_BUTTON_TEXT = __( 'Replace Image', 'block-editor-components' );
 
 /**
  * Image sidebar control.
@@ -25,35 +27,45 @@ export default function ImageControl( props ) {
 		label,
 		modalTitle = MODAL_TITLE,
 		removeButtonText = REMOVE_BUTTON_TEXT,
+		replaceButtonText = REPLACE_BUTTON_TEXT,
 		value,
 		onChange,
 	} = props;
 
+	const imageUrl = useSelect(
+		( select ) => select( 'core' ).getMedia( value, { context: 'view' } )?.source_url,
+		[ value ]
+	);
+
 	return (
 		<BaseControl
-			className={ `${ className } ${ value ? 'has-image' : '' }`.trim() }
+			className={ className }
 			help={ help }
 			id={ id }
 			label={ label }
 		>
-			<MediaUploadCheck fallback={ () => ( value && <img alt="" src={ value } /> ) }>
+			<MediaUploadCheck>
 				<MediaUpload
 					allowedTypes={ allowedTypes }
 					render={ ( { open } ) => (
-						<Button onClick={ open }>
-							{ value ? (
-								<img alt="" src={ value } />
-							) : (
-								buttonText
+						<div>
+							{ imageUrl && (
+								<Button isLink onClick={ open }>
+									<img alt="" src={ imageUrl } />
+								</Button>
 							) }
-						</Button>
+							<Button isSecondary onClick={ open }>
+								{ value ? replaceButtonText : buttonText }
+							</Button>
+						</div>
 					) }
 					title={ modalTitle }
 					onSelect={ onChange }
 				/>
 			</MediaUploadCheck>
+			<br />
 			{ value && (
-				<Button isDestructive onClick={ () => onChange( null ) }>
+				<Button isDestructive isLink onClick={ () => onChange( null ) }>
 					{ removeButtonText }
 				</Button>
 			) }

@@ -1,0 +1,11 @@
+**/__tests__/
+/.github/
+/.idea/
+/.vscode/
+/assets/
+/.editorconfig
+/.eslintignore
+/.eslintrc.js
+/.nvmrc
+/babel.config.js
+/webpack.config.js

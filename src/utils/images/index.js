@@ -5,7 +5,7 @@
  *
  * @param {object} image - Image object.
  * @param {string} size - Image size.
- * @returns {object|null} Image data, or null.
+ * @returns {object | null} Image data, or null.
  */
 export function getImageDataForSize( image, size ) {
 	const sizes = image?.sizes ?? image?.media_details?.sizes;

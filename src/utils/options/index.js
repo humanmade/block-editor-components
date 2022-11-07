@@ -18,30 +18,6 @@ export function createOptionFromPost( post, prefix = '' ) {
 }
 
 /**
- * Create an options array to be used with SelectControl for the given array of post objects.
- *
- * @param {object[]} posts - Array with post objects as elements.
- * @returns {object[]} Options data to use with SelectControl.
- */
-export function createOptionsFromPosts( posts ) {
-	return posts.map( ( post ) => createOptionFromPost( post ) );
-}
-
-/**
- * Create an options array to be used with SelectControl for the given array of post objects, visualizing the hierarchy.
- *
- * @param {object[]} posts - Array with post objects as elements.
- * @param {number} [level=0] - Optional. Hierarchy level. Defaults to 0.
- * @returns {object[]} Options data to use with SelectControl.
- */
-export function createOptionsFromPostsWithHierarchy( posts, level = 0 ) {
-	return posts.map( ( { children = [], ...post } ) => [
-		createOptionFromPost( post, '— '.repeat( level ) ),
-		...createOptionsFromPostsWithHierarchy( children, level + 1 ),
-	] ).flat();
-}
-
-/**
  * Create an option data object to be used with SelectControl for the given term object.
  *
  * @param {object} term - Term object.
@@ -58,6 +34,31 @@ export function createOptionFromTerm( term, prefix = '' ) {
 }
 
 /**
+ * Create an options array to be used with SelectControl for the given array of post objects.
+ *
+ * @param {object[]} posts - Array with post objects as elements.
+ * @returns {object[]} Options data to use with SelectControl.
+ */
+export function createOptionsFromPosts( posts ) {
+	return posts.map( ( post ) => createOptionFromPost( post ) );
+}
+
+/**
+ * Create an options array to be used with SelectControl for the given array of post objects, visualizing the hierarchy.
+ *
+ * @param {object[]} posts - Array with post objects as elements.
+ * @param {string} [prefix='— '] - Optional. Prefix to use for the label. Defaults to "— ".
+ * @param {number} [level=0] - Optional. Hierarchy level. Defaults to 0.
+ * @returns {object[]} Options data to use with SelectControl.
+ */
+export function createOptionsFromPostsWithHierarchy( posts, prefix= '— ', level = 0 ) {
+	return posts.map( ( { children = [], ...post } ) => [
+		createOptionFromPost( post, prefix.repeat( level ) ),
+		...createOptionsFromPostsWithHierarchy( children, prefix, level + 1 ),
+	] ).flat();
+}
+
+/**
  * Create an options array to be used with SelectControl for the given array of term objects.
  *
  * @param {object[]} terms - Array with term objects as elements.
@@ -71,12 +72,13 @@ export function createOptionsFromTerms( terms ) {
  * Create an options array to be used with SelectControl for the given array of term objects, visualizing the hierarchy.
  *
  * @param {object[]} terms - Array with term objects as elements.
+ * @param {string} [prefix='— '] - Optional. Prefix to use for the label. Defaults to "— ".
  * @param {number} [level=0] - Optional. Hierarchy level. Defaults to 0.
  * @returns {object[]} Options data to use with SelectControl.
  */
-export function createOptionsFromTermsWithHierarchy( terms, level = 0 ) {
+export function createOptionsFromTermsWithHierarchy( terms, prefix = '— ', level = 0 ) {
 	return terms.map( ( { children = [], ...term } ) => [
-		createOptionFromTerm( term, '— '.repeat( level ) ),
-		...createOptionsFromTermsWithHierarchy( children, level + 1 ),
+		createOptionFromTerm( term, prefix.repeat( level ) ),
+		...createOptionsFromTermsWithHierarchy( children, prefix, level + 1 ),
 	] ).flat();
 }

@@ -55,19 +55,47 @@ describe( 'isActive', () => {
 	const { isActive } = withActiveVariation( settings, 'corners' ).variations[0];
 
 	it( 'should return false for a missing block attribute', () => {
-		expect( isActive( {}, { corners: 'rounded' } ) ).toBe( false );
+		const blockAttributes = {};
+
+		const variationAttributes = {
+			corners: 'rounded',
+		};
+
+		expect( isActive( blockAttributes, variationAttributes ) ).toBe( false );
 	} );
 
 	it( 'should return false for a missing variation attribute', () => {
-		expect( isActive( { corners: 'rounded' }, {} ) ).toBe( false );
+		const blockAttributes = {
+			corners: 'rounded',
+		};
+
+		const variationAttributes = {};
+
+		expect( isActive( blockAttributes, variationAttributes ) ).toBe( false );
 	} );
 
 	it( 'should return false for a non-matching attribute', () => {
-		expect( isActive( { corners: 'none' }, { corners: 'rounded' } ) ).toBe( false );
+		const blockAttributes = {
+			corners: 'none',
+		};
+
+		const variationAttributes = {
+			corners: 'rounded',
+		};
+
+		expect( isActive( blockAttributes, variationAttributes ) ).toBe( false );
 	} );
 
 	it( 'should return true for a matching attribute', () => {
-		expect( isActive( { corners: 'rounded' }, { corners: 'rounded' } ) ).toBe( true );
+		const blockAttributes = {
+			corners: 'rounded',
+		};
+
+		const variationAttributes = {
+			corners: 'rounded',
+		};
+
+		expect( isActive( blockAttributes, variationAttributes ) ).toBe( true );
 	} );
 
 } );

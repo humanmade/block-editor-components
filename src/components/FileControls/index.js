@@ -20,7 +20,9 @@ export default function FileControls( props ) {
 	return (
 		<MediaUploadCheck>
 			<MediaUpload
+				title={ __( 'Select or Upload File', 'block-editor-components' ) }
 				{ ...mediaUploadProps }
+				multiple={ false }
 				render={ ( { open } ) => (
 					<ToolbarGroup>
 						<ToolbarButton

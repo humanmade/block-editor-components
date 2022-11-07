@@ -57,7 +57,7 @@ function FetchAllTermSelectControl( props ) {
 						} ),
 					} );
 					if ( ! response?.length ) {
-						setOptions( [ fallbackOption ] );
+						setOptions( fallbackOption ? [ fallbackOption ] : [] );
 
 						return;
 					}
@@ -67,7 +67,7 @@ function FetchAllTermSelectControl( props ) {
 						...createOptionsFromTerms( response ),
 					] );
 				} catch ( error ) {
-					setError( error.toString() );
+					setError( error.message ?? __( 'Unknown error.', 'block-editor-components' ) );
 				}
 			} )();
 		},
@@ -76,7 +76,7 @@ function FetchAllTermSelectControl( props ) {
 
 	if ( error ) {
 		return (
-			<Notice status="error">
+			<Notice isDismissible={ false } status="error">
 				<p>{ error }</p>
 			</Notice>
 		);

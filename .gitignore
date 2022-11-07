@@ -1,7 +1,8 @@
 .DS_Store
 *.log
-/.idea
-/.vscode
+/.idea/
+/.vscode/
+/dist/index.asset.php
 /node_modules/
 /vendor/
 

@@ -8,7 +8,12 @@ module.exports = {
 	entry: './src/index.js',
 	mode: 'production',
 	output: {
+		clean: true,
 		filename: 'index.js',
+		library: {
+			name: '@humanmade/block-editor-components',
+			type: 'umd',
+		},
 		path: path.resolve( __dirname, 'dist' ),
 	},
 	module: {

@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { BaseControl, Button } from '@wordpress/components';
+import { BaseControl, Button, Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
@@ -66,13 +66,17 @@ export default function ImageControl( props ) {
 					allowedTypes={ allowedTypes }
 					render={ ( { open } ) => (
 						<div>
-							{ imageUrl && (
-								<Button isLink onClick={ open }>
-									<img alt="" src={ imageUrl } />
-								</Button>
-							) }
+							{ value ? (
+								imageUrl ? (
+									<Button isLink onClick={ open }>
+										<img alt="" src={ imageUrl } />
+									</Button>
+								) : (
+									<Spinner />
+								)
+							) : null }
 							<Button isSecondary onClick={ open }>
-								{ imageUrl ? replaceButtonText : buttonText }
+								{ value ? replaceButtonText : buttonText }
 							</Button>
 						</div>
 					) }
@@ -81,11 +85,11 @@ export default function ImageControl( props ) {
 				/>
 			</MediaUploadCheck>
 			<br />
-			{ imageUrl && (
+			{ value ? (
 				<Button isDestructive isLink onClick={ () => onChange( null ) }>
 					{ removeButtonText }
 				</Button>
-			) }
+			) : null }
 		</BaseControl>
 	);
 }

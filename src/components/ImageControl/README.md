@@ -13,7 +13,7 @@ Internally, `ImageControl` is wrapping a [`MediaUpload`](https://github.com/Word
 
 ## Usage
 
-For a minimum working setup, all you need to do is pass an image URL as `value`, as well as an `onChange` callback that accepts an image object.
+For a minimum working setup, all you need to do is pass an image ID as `value`, as well as an `onChange` callback that accepts an image object.
 
 ```js
 import { ImageControl } from '@humanmade/block-editor-components';
@@ -28,6 +28,32 @@ function BlockEdit( props ) {
 		<InspectorControls>
 			<PanelBody>
 				<ImageControl
+					value={ imageId }
+					onChange={ ( image ) => setAttributes( { imageId: image?.id } ) }
+				/>
+			</PanelBody>
+		</InspectorControls>
+	);
+}
+```
+
+If you want to show a select image size in the sidebar, you can pass a `size`.
+In case the image is not available in the specified size, the component will display the full image instead, which is the default behavior. 
+
+```js
+import { ImageControl } from '@humanmade/block-editor-components';
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
+
+function BlockEdit( props ) {
+	const { attributes, setAttributes } = props;
+	const { imageId } = attributes;
+
+	return (
+		<InspectorControls>
+			<PanelBody>
+				<ImageControl
+					size="thumbnail"
 					value={ imageId }
 					onChange={ ( image ) => setAttributes( { imageId: image?.id } ) }
 				/>
@@ -113,13 +139,21 @@ The button text to display if an image has been selected.
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `string`                             | no                                   | `'Replace Image`                     |
 
-### `value`
+### `size`
 
-An image URL.
+The image size to display in the sidebar.
 
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
-| `string`                             | yes                                  | `undefined`                          |
+| `string`                             | no                                   | `undefined`                          |
+
+### `value`
+
+An image ID.
+
+| Type                                 | Required                             | Default                              |
+|--------------------------------------|--------------------------------------|--------------------------------------|
+| `number`                             | yes                                  | `undefined`                          |
 
 ## Dependencies
 

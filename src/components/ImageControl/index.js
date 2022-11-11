@@ -5,6 +5,8 @@ import { BaseControl, Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
+import { getImageDataForSize } from '../../utils/images';
+
 const allowedTypes = [ 'image' ];
 
 const BUTTON_TEXT = __( 'Select Image', 'block-editor-components' );
@@ -28,12 +30,27 @@ export default function ImageControl( props ) {
 		modalTitle = MODAL_TITLE,
 		removeButtonText = REMOVE_BUTTON_TEXT,
 		replaceButtonText = REPLACE_BUTTON_TEXT,
+		size,
 		value,
 		onChange,
 	} = props;
 
 	const imageUrl = useSelect(
-		( select ) => select( 'core' ).getMedia( value, { context: 'view' } )?.source_url,
+		( select ) => {
+			const image = select( 'core' ).getMedia( value, { context: 'view' } );
+			if ( ! image ) {
+				return undefined;
+			}
+
+			if ( size ) {
+				const imageData = getImageDataForSize( image, size );
+				if ( imageData ) {
+					return imageData.src;
+				}
+			}
+
+			return image.source_url;
+		},
 		[ value ]
 	);
 
@@ -55,7 +72,7 @@ export default function ImageControl( props ) {
 								</Button>
 							) }
 							<Button isSecondary onClick={ open }>
-								{ value ? replaceButtonText : buttonText }
+								{ imageUrl ? replaceButtonText : buttonText }
 							</Button>
 						</div>
 					) }
@@ -64,7 +81,7 @@ export default function ImageControl( props ) {
 				/>
 			</MediaUploadCheck>
 			<br />
-			{ value && (
+			{ imageUrl && (
 				<Button isDestructive isLink onClick={ () => onChange( null ) }>
 					{ removeButtonText }
 				</Button>

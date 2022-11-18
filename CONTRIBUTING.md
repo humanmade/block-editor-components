@@ -6,6 +6,13 @@ Human Made - Block Editor Components - Contribution Guide
 * Open a pull request against [`humanmade/block-editor-components`](https://github.com/humanmade/block-editor-components)
 * Pull requests should be reviewed and merged by an engineer at Human Made.
 
+## Releasing a new version.
+
+* Check out `main` locally and check you are synced with origin. `git checkout main & git reset origin/main --hard`
+* Run `npm version major|minor|patch`, adjusting as necessary depending on the type of release.
+* `git push -u origin/new-release --tags`
+* Once the new tag is shared, a github action will build and publish to npm automatically.
+
 ## Local development.
 
 You can contribute to this project whilst working on a project that is using it by using [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).

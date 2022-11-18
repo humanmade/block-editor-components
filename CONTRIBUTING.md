@@ -23,7 +23,7 @@ npm install && npm run build
 npm link
 ```
 
-Next,  from your project root directory, run:
+Next, from your project root directory, run:
 
 ```bash
 npm link @humanmade/block-editor-components

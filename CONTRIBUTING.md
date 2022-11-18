@@ -29,7 +29,7 @@ Next, from your project root directory, run:
 npm link @humanmade/block-editor-components
 ```
 
-Now, your project will use a version of `block-editor-components` that is symlinked from the repo you just cloned. You can check out a new feature branch, work on a change, test it within a real project,
+Now, your project will use a version of `block-editor-components` that is symlinked from the repo you just cloned. You can check out a new feature branch, work on a change, and test it within a real project,
 
 When you're done, you can unlink the package by running the following:
 

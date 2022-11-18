@@ -8,7 +8,7 @@ Human Made - Block Editor Components - Contribution Guide
 
 ## Local development.
 
-You can contribute to this project whilst working on a project that is using it by using [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).
+You can contribute to Block Editor Components whilst working on a project that is using it with [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).
 
 Setting this up is a 2 part process. First, clone a copy of block editor components and link it locally.
 

@@ -6,12 +6,6 @@ Human Made - Block Editor Components - Contribution Guide
 * Open a pull request against [`humanmade/block-editor-components`](https://github.com/humanmade/block-editor-components)
 * Pull requests should be reviewed and merged by an engineer at Human Made.
 
-## Releasing a new version.
-
-* Check out `main` locally and check you are synced with origin. `git checkout main & git reset origin/main --hard`
-* Run `npm version major|minor|patch`, adjusting as necessary depending on the type of release.
-* `git push -u origin/new-release --tags`
-
 ## Local development.
 
 You can contribute to this project whilst working on a project that is using it by using [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).
@@ -42,3 +36,7 @@ When you're done, you can unlink the package by running the following:
 ```
 npm unlink @humanmade/block-editor-components
 ```
+
+### Automatically build after making changes.
+
+Whilst developing, it is useful have webpack watch for changes and rebuild the distributed files automatically. To do this, run `npm run start`.

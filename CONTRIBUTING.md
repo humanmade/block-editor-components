@@ -1,49 +1,61 @@
-Human Made - Block Editor Components - Contribution Guide
-=========================================================
+Block Editor Components - Contribution Guide
+===
+
+## Process
 
 * Create a feature branch from `main`.
-* Work on your change locally.
-* Open a pull request against [`humanmade/block-editor-components`](https://github.com/humanmade/block-editor-components)
+* Work on your branch locally.
+* Open a pull request against [`humanmade/block-editor-components`](https://github.com/humanmade/block-editor-components).
 * Pull requests should be reviewed and merged by an engineer at Human Made.
 
-## Releasing a new version.
+## Local Development
 
-* Check out `main` locally and check you are synced with origin. `git checkout main & git reset origin/main --hard`
-* Run `npm version major|minor|patch`, adjusting as necessary depending on the type of release.
-* `git push -u origin/new-release --tags`
-* Once the new tag is shared, a github action will build and publish to npm automatically.
+You can contribute to Block Editor Components whilst working on a project that is using it with [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).
 
-## Local development.
+Setting this up is a two-part process.
+First, clone the block editor components repository and link it locally.
 
-You can contribute to this project whilst working on a project that is using it by using [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).
-
-Setting this up is a 2 part process. First, clone a copy of block editor components and link it locally.
-
-```bash
-# Clone this repo into a new directory (completely separate from any project.)
+```shell
+# Clone this repo into a new directory (completely separate from any project).
 git clone git@github.com:humanmade/block-editor-components.git
+
 # Change to the block editor components directory.
 cd block-editor-components
+
 # Install dependencies and build.
-npm install && npm run build
+npm ci && npm run build
+
 # Link this package.
 npm link
 ```
 
-Next,  from your project root directory, run:
+Next, from your project root directory, run:
 
-```bash
+```shell
 npm link @humanmade/block-editor-components
 ```
 
-Now, your project will use a version of `block-editor-components` that is symlinked from the repo you just cloned. You can check out a new feature branch, work on a change, test it within a real project,
+Now, your project will use a version of `block-editor-components` that is symlinked from the repo you just cloned.
+You can check out a new feature branch, work on a change, and test it within a real project.
 
 When you're done, you can unlink the package by running the following:
 
-```
+```shell
 npm unlink @humanmade/block-editor-components
 ```
 
-### Automatically build after making changes.
+### Automatic Build
 
-Whilst developing, it is useful have webpack watch for changes and rebuild the distributed files automatically. To do this, run `npm run start`.
+Whilst developing, it is useful have Webpack watch for changes and rebuild the distributed files automatically.
+To do this, run:
+
+```shell
+npm run start
+```
+
+## Release Process
+
+* Check out `main` locally and check you are synced with origin. `git checkout main && git reset origin/main --hard`
+* Run `npm version major|minor|patch`, adjusting as necessary depending on the type of release.
+* `git push -u origin/new-release --tags`
+* Once the new tag is shared, a GitHub Action workflow will build and publish to npm automatically.

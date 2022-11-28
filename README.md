@@ -11,6 +11,7 @@
 - [Components](#components)
 - [Hooks](#hooks)
 - [Utils](#utils)
+- [Contributing](#contributing)
 
 ---
 
@@ -66,3 +67,8 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 - [Image Utils](src/utils/images)
 - [Option Utils](src/utils/options)
 - [Variation Utils](src/utils/variations)
+
+## Contributing
+
+This project relies on contributions from those using it!
+See the [contribution guidelines](CONTRIBUTING.md) for more information.

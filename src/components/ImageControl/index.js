@@ -35,6 +35,18 @@ export default function ImageControl( props ) {
 		onChange,
 	} = props;
 
+	const imageAlt = useSelect(
+		( select ) => {
+			const image = select( 'core' ).getMedia( value, { context: 'view' } );
+			if ( ! image ) {
+				return '';
+			}
+
+			return image.alt_text;
+		},
+		[ value ]
+	);
+
 	const imageUrl = useSelect(
 		( select ) => {
 			const image = select( 'core' ).getMedia( value, { context: 'view' } );
@@ -51,7 +63,7 @@ export default function ImageControl( props ) {
 
 			return image.source_url;
 		},
-		[ value ]
+		[ size, value ]
 	);
 
 	return (
@@ -69,7 +81,7 @@ export default function ImageControl( props ) {
 							{ value ? (
 								imageUrl ? (
 									<Button isLink onClick={ open }>
-										<img alt="" src={ imageUrl } />
+										<img alt={ imageAlt } src={ imageUrl } />
 									</Button>
 								) : (
 									<Spinner />

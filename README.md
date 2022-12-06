@@ -12,6 +12,7 @@
 - [Hooks](#hooks)
 - [Utils](#utils)
 - [Contributing](#contributing)
+- [Release Process](#release-process)
 
 ---
 
@@ -72,3 +73,27 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 
 This project relies on contributions from those using it!
 See the [contribution guidelines](CONTRIBUTING.md) for more information.
+
+## Release Process
+
+The default branch, `main` contains sources only.
+Releases are published from a dedicated branch, `release`, which also includes the built assets.
+
+Releasing a new version is done via the `release` script, which must be executed from the default branch:
+
+```shell
+npm run release
+```
+
+Internally, this is using [`np`](https://github.com/sindresorhus/np), and performs the following individual steps:
+
+- Check Git context, both local and remote.
+- Install dependencies to ensure the package works with the latest dependency tree.
+- Run tests.
+- Bump version using npm.
+- Check out the `release` branch, and merge the latest changes.
+- Build the assets, and commit.
+- Publish the new version to npm.
+- Create and push the new tag.
+- Open a draft Release on GitHub.
+- Push the `main` branch.

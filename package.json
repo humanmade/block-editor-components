@@ -20,7 +20,10 @@
 		"build": "webpack",
 		"dev": "webpack watch --mode development",
 		"lint": "eslint .",
-		"test": "jest"
+		"release": "np --branch=main",
+		"test": "jest",
+		"postpublish": "git checkout main && git push",
+		"postversion": "git checkout release && git pull && git merge main && npm run build && git add -f dist && git commit -m 'Build'"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-class-properties": "^7.18.6",

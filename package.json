@@ -18,7 +18,7 @@
 	"repository": "github:humanmade/block-editor-components",
 	"scripts": {
 		"build": "webpack",
-		"start": "webpack watch --mode development",
+		"dev": "webpack watch --mode development",
 		"lint": "eslint .",
 		"test": "jest"
 	},

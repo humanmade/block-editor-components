@@ -36,6 +36,7 @@ Carousel block JS.
 
 ```js
 import { InnerBlockSlider } from '@humanmade/block-editor-components';
+import { useBlockProps, useInnerBlockProps, InspectorControls } from '@wordpress/block-editor';
 import metadata from './block.json';
 
 registerBlockType( metadata, {

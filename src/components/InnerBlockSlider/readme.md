@@ -36,32 +36,44 @@ Carousel block JS.
 
 ```js
 import { InnerBlockSlider } from '@humanmade/block-editor-components';
-import { useBlockProps, useInnerBlockProps, InspectorControls } from '@wordpress/block-editor';
+import React from 'react';
+
+import { useBlockProps, useInnerBlocksProps, InspectorControls } from '@wordpress/block-editor';
+import { registerBlockType } from '@wordpress/blocks';
+
 import metadata from './block.json';
 
-registerBlockType( metadata, {
-	edit: ( { clientId } ) => {
-		return (
-			<div { ...useBlockProps() }>
-				<InspectorControls>
-					{ /* if necessary, use inspector controls to add UI for any required functionality. */ }
-				</InspectorControls>
-				{ /* Note: because this component uses InnerBlocks, you cannot use InnerBlocks for anything else in your parent block.  */ }
-				<InnerBlockSlider
-					allowedBlock="wp/image"
-					slideLimit={ 10 }
-					parentBlockId={ clientId }
-				/>
-			</div>
-		);
-	},
-	save: () => {
-		<div { ...useBlockProps.save() }>
-			<div { ...useInnerBlockProps.save() } />
+function Edit( { clientId } ) {
+	return (
+		<div { ...useBlockProps() }>
+			<InspectorControls>
+				{ /* if necessary, use inspector controls to add UI for any required functionality. */ }
+			</InspectorControls>
+			{ /* Note: because this component uses InnerBlocks, you cannot use InnerBlocks for anything else in your parent block.  */ }
+			<InnerBlockSlider
+				allowedBlock="core/image"
+				parentBlockId={ clientId }
+				slideLimit={ 10 }
+			/>
 		</div>
-	}
-} );
+	);
+}
 
+function Save( props ) {
+	return (
+		<div { ...useBlockProps.save() }>
+			<div { ...useInnerBlocksProps.save() } />
+		</div>
+	);
+}
+
+registerBlockType(
+	metadata,
+	{
+		edit: Edit,
+		save: Save,
+	}
+);
 ```
 
 Note the examples here use block API version 2, and `useBlockProps`/`useInnerBlockProps` which gives us more control over the markup. This block is currently only compatible with version 2 of the block schema.

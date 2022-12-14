@@ -62,7 +62,7 @@ const InnerBlockSlider = ( props ) => {
 	}, [ slideBlocks.length, currentSlideIndex, slideCount ] );
 
 	return (
-		<div className="inner-block-slider">
+		<div className="hm-inner-block-slider">
 			<InnerBlocksDisplaySingle
 				allowedBlocks={ [ allowedBlock ] }
 				className="slides"

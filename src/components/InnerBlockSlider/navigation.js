@@ -27,7 +27,7 @@ function Navigation( {
 	addSlideEnabled = false,
 } ) {
 	return (
-		<div className="inner-block-slider__navigation">
+		<div className="hm-inner-block-slider__navigation">
 			<IconButton
 				disabled={ ! prevEnabled }
 				icon="arrow-left-alt2"

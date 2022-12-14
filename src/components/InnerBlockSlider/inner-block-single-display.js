@@ -26,7 +26,7 @@ function InnerBlocksDisplaySingle( props ) {
 	const styleRef = useRef();
 
 	const innerBlockProps = useInnerBlocksProps( {
-		id: `inner-block-display-single-${ parentBlockId}`,
+		id: `hm-inner-block-display-single-${ parentBlockId}`,
 		className,
 	},
 	{
@@ -43,7 +43,7 @@ function InnerBlocksDisplaySingle( props ) {
 			return;
 		}
 
-		styleRef.current.innerHTML = `#inner-block-display-single-${ parentBlockId } > *:not(:nth-child(${ currentSlideIndex + 1 }) ) { display: none; }`;
+		styleRef.current.innerHTML = `#hm-inner-block-display-single-${ parentBlockId } > *:not(:nth-child(${ currentSlideIndex + 1 }) ) { display: none; }`;
 	}, [ currentSlideIndex, styleRef, parentBlockId ] );
 
 	return (

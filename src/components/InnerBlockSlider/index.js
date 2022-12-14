@@ -68,13 +68,13 @@ const InnerBlockSlider = ( props ) => {
 				className="slides"
 				currentSlideIndex={ currentSlideIndex }
 				parentBlockId={ parentBlockId }
-				template={ [ allowedBlock ] }
+				template={ [ [ allowedBlock, {} ] ] }
 			/>
 
 			<Navigation
 				addSlide={ addSlide }
 				addSlideEnabled={ slideBlocks.length < slideLimit }
-				currentPage={ currentSlideIndex + 1 }
+				currentSlide={ currentSlideIndex + 1 }
 				nextEnabled={ currentSlideIndex + 1 < slideBlocks.length }
 				prevEnabled={ currentSlideIndex + 1 > 1 }
 				setCurrentSlide={ page => setCurrentSlideIndex( page - 1 ) }

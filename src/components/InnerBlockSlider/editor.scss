@@ -29,6 +29,14 @@
 				border-bottom-left-radius: 0;
 			}
 
+			&.is-secondary {
+				background: white;
+			}
+
+			&.is-small {
+				height: 2.25rem;
+			}
+
 			&.has-icon {
 				.dashicons {
 					font-size: 1rem;

@@ -76,7 +76,7 @@ See the [contribution guidelines](CONTRIBUTING.md) for more information.
 
 ## Release Process
 
-The default branch, `main` contains sources only.
+The default branch, `main`, contains sources only.
 Releases are published from a dedicated branch, `release`, which also includes the built assets.
 
 Releasing a new version is done via the `release` script, which must be executed from the default branch:

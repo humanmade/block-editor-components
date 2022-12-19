@@ -64,7 +64,7 @@ jobs:
 
       - name: Install dependencies
         if: ${{ toJSON( steps.paths.outputs.changes ) != '"[]"' && steps.cache-node-dependencies.outputs.cache-hit != 'true' }}
-        run: npm ci --progress=false --audit=false --fund=false
+        run: npm ci --no-progress --no-fund --no-audit --loglevel error
 
       - name: Lint code
         if: ${{ steps.paths.outputs.eslint == 'true' }}

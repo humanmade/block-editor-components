@@ -83,9 +83,50 @@ function BlockEdit( props ) {
 }
 ```
 
+Also, you can pass a custom `createLabel` function that takes a numeric heading level and returns the label to use for the heading.
+
+```js
+import { HeadingSelectControl } from '@humanmade/block-editor-components';
+import { InspectorControls } from '@wordpress/block-editor';
+
+function createLabel( level ) {
+	if ( level === 8 ) {
+		return 'Subheading';
+	}
+
+	return `Heading ${ level }`;
+}
+
+function BlockEdit( props ) {
+	const { attributes, setAttributes } = props;
+	const { level } = attributes;
+
+	return (
+		<InspectorControls>
+			<HeadingSelectControl
+				createLabel={ createLabel }
+				max={ 8 }
+				min={ 6 }
+				value={ level }
+				onChange={ ( level ) => setAttributes( { level } ) }
+			/>
+		</InspectorControls>
+	);
+}
+```
+
 ## Props
 
 The `HeadingSelectControl` component does not have any custom props other than the optional `max` and `min`, but you can pass anything that is supported by the nested [`SelectControl`](https://github.com/WordPress/gutenberg/blob/trunk/packages/components/src/select-control/index.tsx) component.
+
+### `createLabel`
+
+An optional function to create the label for the heading with the given level.
+The first and only argument passed to the function is the numeric heading level.
+
+| Type                         | Required                     | Default                                              |
+|------------------------------|------------------------------|------------------------------------------------------|
+| `Function`                   | no                           | `( level ) => sprintf( __( 'Heading %d' ), level )`  |
 
 ### `max`
 

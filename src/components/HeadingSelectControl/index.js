@@ -4,6 +4,20 @@ import { SelectControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
+ * Get the label for the heading with the given level.
+ *
+ * @param {number} level - Heading level.
+ * @returns {string} Label.
+ */
+function _createLabel( level ) {
+	return sprintf(
+		// translators: %s: heading level (e.g.: 1, 2, 3).
+		__( 'Heading %d', 'block-editor-components' ),
+		level
+	);
+}
+
+/**
  * A dropdown control that allows for selecting a heading level.
  *
  * @param {object} props - Component props.
@@ -11,6 +25,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 function HeadingSelectControl( props ) {
 	const {
+		createLabel = _createLabel,
 		max = 6,
 		min = 2,
 		onChange,
@@ -28,16 +43,12 @@ function HeadingSelectControl( props ) {
 				const level = min + index;
 
 				return {
-					label: sprintf(
-						// translators: %s: heading level (e.g.: 1, 2, 3).
-						__( 'Heading %d', 'block-editor-components' ),
-						level
-					),
+					label: createLabel( level ),
 					value: level,
 				};
 			} );
 		},
-		[ max, min ]
+		[ createLabel, max, min ]
 	);
 
 	return (

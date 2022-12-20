@@ -23,7 +23,7 @@ concurrency:
 jobs:
   node:
     name: Node
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:

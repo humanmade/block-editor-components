@@ -7,6 +7,7 @@ export { default as PlainTextWithLimit } from './components/PlainTextWithLimit';
 export { default as PostTitleControl } from './components/PostTitleControl';
 export { default as PostTypeCheck } from './components/PostTypeCheck';
 export { default as RichTextWithLimit } from './components/RichTextWithLimit';
+export { default as InnerBlockSlider } from './components/InnerBlockSlider';
 
 export { default as useActiveBlockStyle } from './hooks/useActiveBlockStyle';
 export { default as useBlockStyles } from './hooks/useBlockStyles';

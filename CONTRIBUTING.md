@@ -52,3 +52,10 @@ To do this, run:
 ```shell
 npm run start
 ```
+
+## Release Process
+
+* Check out `main` locally and check you are synced with origin. `git checkout main && git reset origin/main --hard`
+* Run `npm version major|minor|patch`, adjusting as necessary depending on the type of release.
+* `git push -u origin/new-release --tags`
+* Once the new tag is shared, a GitHub Action workflow will build and publish to npm automatically.

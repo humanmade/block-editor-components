@@ -50,5 +50,5 @@ Whilst developing, it is useful have Webpack watch for changes and rebuild the d
 To do this, run:
 
 ```shell
-npm run start
+npm run dev
 ```

@@ -46,6 +46,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 - [`FileControls`](src/components/FileControls)
 - [`HeadingSelectControl`](src/components/HeadingSelectControl)
 - [`ImageControl`](src/components/ImageControl)
+- [`InnerBlockSlider`](src/components/InnerBlockSlider)
 - [`LinkToolbar`](src/components/LinkToolbar)
 - [`PlainTextWithLimit`](src/components/PlainTextWithLimit)
 - [`PostTitleControl`](src/components/PostTitleControl)

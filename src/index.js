@@ -2,6 +2,7 @@ export { default as ConditionalComponent } from './components/ConditionalCompone
 export { default as FetchAllTermSelectControl } from './components/FetchAllTermSelectControl';
 export { default as FileControls } from './components/FileControls';
 export { default as ImageControl } from './components/ImageControl';
+export { default as InnerBlockSlider } from './components/InnerBlockSlider';
 export { default as LinkToolbar } from './components/LinkToolbar';
 export { default as PlainTextWithLimit } from './components/PlainTextWithLimit';
 export { default as PostTitleControl } from './components/PostTitleControl';

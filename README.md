@@ -45,6 +45,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 - [`FetchAllTermSelectControl`](src/components/FetchAllTermSelectControl)
 - [`FileControls`](src/components/FileControls)
 - [`ImageControl`](src/components/ImageControl)
+- [`InnerBlockSlider`](src/components/InnerBlockSlider)
 - [`LinkToolbar`](src/components/LinkToolbar)
 - [`PlainTextWithLimit`](src/components/PlainTextWithLimit)
 - [`PostTitleControl`](src/components/PostTitleControl)

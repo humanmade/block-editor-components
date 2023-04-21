@@ -55,8 +55,8 @@ npm run start
 
 ### Releasing a new version
 
-* `git checkout main && git reset origin/main --hard`
-* `npm version major|minor|patch`
-* `npm run build && git add dist/ ** git commit --amend`.
-* `git push --follow-tags`
-* `npm publish`
+* Check out main branch and ensure no local changes: `git checkout main && git reset origin/main --hard`
+* Bump version: `npm version major|minor|patch`
+* Build assets: `git add -f dist/ && git commit --amend --no-edit`.
+* Push changes: `git push --follow-tags`
+* Publish to NPM: `npm publish`

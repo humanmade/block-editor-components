@@ -58,7 +58,6 @@ npm run start
 Note: You will need to have publishing access to the package on npmjs.com in order to release a new version..
 
 * Check out main branch and ensure no local changes: `git checkout main && git reset origin/main --hard`
-* Bump version: `npm version major|minor|patch`
-* Build assets: `git add -f dist/ && git commit --amend --no-edit`.
+* Bump version: `npm version major|minor|patch`. This updates the version in the package.json, runs build script, commits changes and creates a tag from the commit.
 * Push changes: `git push --follow-tags`
 * Publish to NPM: `npm publish`

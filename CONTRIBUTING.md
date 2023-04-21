@@ -52,3 +52,11 @@ To do this, run:
 ```shell
 npm run start
 ```
+
+### Releasing a new version
+
+* `git checkout main && git reset origin/main --hard`
+* `npm version major|minor|patch`
+* `npm run build && git add dist/ ** git commit --amend`.
+* `git push --follow-tags`
+* `npm publish`

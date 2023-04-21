@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo, useState } from 'react';
 
 import { __experimentalLinkControl as LinkControl } from '@wordpress/block-editor';
-import { Popover, Toolbar } from '@wordpress/components';
+import { Popover, ToolbarGroup } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,7 +41,7 @@ export default function LinkToolbar( props ) {
 
 	return (
 		<>
-			<Toolbar controls={ controls } />
+			<ToolbarGroup controls={ controls } />
 			{ showLinkControl && (
 				<Popover>
 					<LinkControl

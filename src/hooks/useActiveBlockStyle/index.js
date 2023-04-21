@@ -30,7 +30,7 @@ function parseClassName( className = '' ) {
 export default function useActiveBlockStyle( clientId ) {
 	const { blockName, className } = useSelect(
 		( select ) => {
-			const block = select( 'core/editor' ).getBlock( clientId );
+			const block = select( 'core/block-editor' ).getBlock( clientId );
 
 			return {
 				blockName: block?.name ?? '',

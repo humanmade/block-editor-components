@@ -15,7 +15,7 @@ import Navigation from './navigation';
  * @param {string} props.allowedBlock  Allowed block type.
  * @param {Array}  props.template      Initial block template.
  * @param {number} props.slideLimit    Maximum allowed slides.
- * @returns {import('react').ReactNode} Component.
+ * @returns {React.ReactNode} Component.
  */
 const InnerBlockSlider = ( {
 	parentBlockId,

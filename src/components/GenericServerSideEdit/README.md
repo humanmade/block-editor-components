@@ -1,4 +1,4 @@
-# PostTypeCheck
+# GenericServerSideEdit
 
 The `GenericServerSideEdit` component is a generic block edit component that uses server side rendering to display content.
 

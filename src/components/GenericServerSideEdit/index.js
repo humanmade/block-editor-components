@@ -4,11 +4,23 @@ import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
 
 /**
- * Render the edit interface.
+ * Renders the block edit interface using server side rendering.
  *
- * @returns {import('react').ReactNode} Rendered editorial UI.
+ * @param {object} props Block props
+ * @param {object} props.attributes block attributes
+ * @param {object} props.context block context data
+ * @param {string} props.name name of block
+ * @param {React.ReactNode} props.inspectorControls an optional component to hold block field UI
+ * @returns {React.ReactNode} Rendered editorial UI.
  */
-export default function GenericServerSideEdit( { attributes, context, name, inspectorControls } ) {
+function GenericServerSideEdit( { attributes, context, name, inspectorControls } ) {
+
+	/**
+	 * A generic empty response component that uses the standard wp-block-name class
+	 * for when an empty value is returned by the API.
+	 *
+	 * @returns {React.ReactNode} block rendered as empty component.
+	 */
 	const emptyResponse = () => {
 		return (
 			<div className={ `wp-block-${ name.replace( '/', '-' ) }` } >
@@ -23,15 +35,17 @@ export default function GenericServerSideEdit( { attributes, context, name, insp
 			<div { ...useBlockProps() }>
 				<Disabled>
 					<ServerSideRender
-						block={ name }
 						attributes={ attributes }
+						block={ name }
+						EmptyResponsePlaceholder={ emptyResponse }
 						urlQueryArgs={
 							( typeof context === 'object' && Object.hasOwn( context, 'postId' ) ) ? { post_id: context.postId } : {}
 						}
-						EmptyResponsePlaceholder={ emptyResponse }
 					/>
 				</Disabled>
 			</div>
 		</>
 	);
 }
+
+export default GenericServerSideEdit;

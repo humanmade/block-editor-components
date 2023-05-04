@@ -12,6 +12,7 @@ module.exports = {
 		Backbone: 'readonly',
 		jQuery: 'readonly',
 		wp: 'readonly',
+		React: true,
 	},
 	rules: {
 		'arrow-parens': 'off',

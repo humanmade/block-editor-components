@@ -18,7 +18,7 @@ registerBlockType( blockMetadata, {
 
 ```
 
-Optionally, you can use it inside an edit component with inspector controls:
+Optionally, you can use it inside an edit component with inspector controls via a fragment like this:
 
 ```js
 import { Panel, PanelBody } from '@wordpress/components';
@@ -33,22 +33,22 @@ import GenericServerSideEdit from '@humanmade/block-editor-components';
  * @returns {import('react').ReactNode} Rendered editorial UI.
  */
 export default function Edit( { attributes, context, setAttributes } ) {
-	return <GenericServerSideEdit
-		name="my/blockname"
-		attributes={ attributes }
-		context={ context }
-		inspectorControls={
-			<InspectorControls>
-				<Panel>
-					<PanelBody
-						title={ __( 'Panel Title', 'mytextdomain' ) }
-					>
-						<p>{ __( 'Panel Content', 'mytextdomain' ) }</p>
-					</PanelBody>
-				</Panel>
-			</InspectorControls>
-		}
-	/>;
+	return <>
+		<InspectorControls>
+			<Panel>
+				<PanelBody
+					title={ __( 'Panel Title', 'mytextdomain' ) }
+				>
+					<p>{ __( 'Panel Content', 'mytextdomain' ) }</p>
+				</PanelBody>
+			</Panel>
+		</InspectorControls>
+		<GenericServerSideEdit
+			name="my/blockname"
+			attributes={ attributes }
+			context={ context }
+		/>
+	</>;
 }
 ```
 
@@ -79,12 +79,3 @@ Necessary for context aware blocks, currently supports the `post_id` context if 
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
 | `object`                             | no                                   | `null`                               |
-
-
-### `inspectorControls`
-
-Optional inspector controls component for adding toolbar items, and sidebar inspector controls.
-
-| Type                                 | Required                             | Default                              |
-|--------------------------------------|--------------------------------------|--------------------------------------|
-| `ReactNode`                          | no                                   | `null`                               |

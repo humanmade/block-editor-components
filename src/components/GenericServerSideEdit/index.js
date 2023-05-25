@@ -10,10 +10,9 @@ import ServerSideRender from '@wordpress/server-side-render';
  * @param {object} props.attributes block attributes
  * @param {object} props.context block context data
  * @param {string} props.name name of block
- * @param {React.ReactNode} props.inspectorControls an optional component to hold block field UI
  * @returns {React.ReactNode} Rendered editorial UI.
  */
-function GenericServerSideEdit( { attributes, context, name, inspectorControls } ) {
+function GenericServerSideEdit( { attributes, context, name } ) {
 
 	/**
 	 * A generic empty response component that uses the standard wp-block-name class
@@ -30,21 +29,18 @@ function GenericServerSideEdit( { attributes, context, name, inspectorControls }
 	};
 
 	return (
-		<>
-			{ inspectorControls }
-			<div { ...useBlockProps() }>
-				<Disabled>
-					<ServerSideRender
-						attributes={ attributes }
-						block={ name }
-						EmptyResponsePlaceholder={ emptyResponse }
-						urlQueryArgs={
-							( typeof context === 'object' && Object.hasOwn( context, 'postId' ) ) ? { post_id: context.postId } : {}
-						}
-					/>
-				</Disabled>
-			</div>
-		</>
+		<div { ...useBlockProps() }>
+			<Disabled>
+				<ServerSideRender
+					attributes={ attributes }
+					block={ name }
+					EmptyResponsePlaceholder={ emptyResponse }
+					urlQueryArgs={
+						( typeof context === 'object' && Object.hasOwn( context, 'postId' ) ) ? { post_id: context.postId } : {}
+					}
+				/>
+			</Disabled>
+		</div>
 	);
 }
 

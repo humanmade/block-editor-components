@@ -47,12 +47,14 @@ function generateIdToTitleMap( termObjects ) {
  * @returns {ReactNode} Component
  */
 function TermSelector( props ) {
-	const { taxonomy, value, onChange } = props;
+	const { taxonomy, value = [], onChange } = props;
+
+	const taxObject = useSelect( select => {
+		return select( 'core' ).getTaxonomy( taxonomy );
+	}, [ taxonomy ] );
 
 	const { taxonomyTermsById, taxonomyTermsByTitle } = useSelect( ( select ) => {
-
 		const termObjects = select( 'core' ).getEntityRecords( 'taxonomy', taxonomy, { per_page: 100 } ) ?? [];
-
 		const taxonomyTermsById = generateIdToTitleMap( termObjects );
 		const taxonomyTermsByTitle = generateTitleToIdMap( termObjects );
 
@@ -60,13 +62,12 @@ function TermSelector( props ) {
 			taxonomyTermsById,
 			taxonomyTermsByTitle,
 		};
-
 	}, [ taxonomy ] );
 
 	const selectedTerms = value.map( id => taxonomyTermsById[id] );
 
 	return ( <FormTokenField
-		label={ `Filter by ${taxonomy}` }
+		label={ `Filter by ${ taxObject ? taxObject.labels.singular_name : '' }` }
 		suggestions={ Object.values( taxonomyTermsById ) }
 		value={ selectedTerms }
 		onChange={ terms => {

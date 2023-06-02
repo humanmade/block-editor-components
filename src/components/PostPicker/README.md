@@ -1,8 +1,6 @@
 # PostPicker
 
-The `PostPicker` controls allows a user to select one or more posts from a given post type, which can be filtered by a taxonomy.
-
-Note there are several components exposed under PostPicker.
+There are several `PostPicker` controls.
 
 * `PostPickerButton` A simple button.
 * `PostPickerToolbarButton` A button for use within `BlockControls` toolbar.
@@ -11,11 +9,11 @@ Note there are several components exposed under PostPicker.
 ## `PostPickerButton`
 
 ```
-import PostPicker from '@humanmade/block-editor-components';
+import { PostPickerButton } from '@humanmade/block-editor-components';
 
 ...
 
-<PostPicker
+<PostPickerButton
 	taxonomies={ [ 'category', 'post_tag' ] }
 	onChange={ newValue => setAttributes( { postIds: newValue } ) }
 	values={ attributes.postIds || [] }

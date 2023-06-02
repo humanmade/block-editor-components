@@ -214,7 +214,7 @@ function BrowsePanel( props ) {
 				} }
 			>
 				<SearchControl
-					label="Search Posts"
+					label={ __( 'Search Posts', 'block-editor-components' ) }
 					style={ { marginBottom: 24 } }
 					value={ search }
 					onChange={ ( text ) => setSearch( text ) }
@@ -273,14 +273,14 @@ export function PostPickerModal( props ) {
 					tabs={ [
 						{
 							name: 'browse',
-							title: __( 'Browse Posts', 'skyscanner' ),
+							title: __( 'Browse Posts', 'block-editor-components' ),
 							content: () => (
 								<>Foo</>
 							),
 						},
 						{
 							name: 'selection',
-							title: __( 'Current Selection', 'skyscanner' ),
+							title: __( 'Current Selection', 'block-editor-components' ),
 						},
 					] }
 				>
@@ -325,6 +325,7 @@ export function PostPickerModal( props ) {
  * Post picker toolbar button.
  *
  * @param props
+ * @returns {ReactNode} Component
  */
 export function PostPickerToolbarButton( props ) {
 	const {

@@ -6,7 +6,7 @@ export { default as ImageControl } from './components/ImageControl';
 export { default as InnerBlockSlider } from './components/InnerBlockSlider';
 export { default as LinkToolbar } from './components/LinkToolbar';
 export { default as PlainTextWithLimit } from './components/PlainTextWithLimit';
-export { default as PostPicker } from './components/PostPicker';
+export * as PostPicker from './components/PostPicker';
 export { default as PostTitleControl } from './components/PostTitleControl';
 export { default as PostTypeCheck } from './components/PostTypeCheck';
 export { default as RichTextWithLimit } from './components/RichTextWithLimit';

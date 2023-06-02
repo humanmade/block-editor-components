@@ -3,6 +3,7 @@ import React, { ReactNode, useCallback, useEffect } from 'react';
 import {
 	Button,
 	ButtonGroup,
+	ToolbarButton,
 	TabPanel,
 	CheckboxControl,
 	Flex,
@@ -319,27 +320,29 @@ export function PostPickerModal( props ) {
 		</Modal>
 	);
 }
+
 /**
- * Component allowing the selection of one or more posts
+ * Post picker toolbar button.
  *
- * @param {object} props Component props
- * @returns {ReactNode} Component
+ * @param props
  */
-function PostPickerButton( props ) {
+export function PostPickerToolbarButton( props ) {
 	const {
 		title = __( 'Select posts', 'block_editor_components' ),
+		icon = 'edit',
 	} = props;
 
 	const [ modalOpen, setModalOpen ] = useState( false );
 
 	return (
 		<>
-			<Button
-				variant="primary"
+			<ToolbarButton
+				icon={ icon }
 				onClick={ () => setModalOpen( true ) }
+				label={ title }
 			>
 				{ title }
-			</Button>
+			</ToolbarButton>
 			{ modalOpen && (
 				<PostPickerModal
 					{ ...props }
@@ -352,11 +355,12 @@ function PostPickerButton( props ) {
 }
 
 /**
- * Post picker toolbar button.
+ * Component allowing the selection of one or more posts
  *
- * @param props
+ * @param {object} props Component props
+ * @returns {ReactNode} Component
  */
-function PostPickerToolbarButton( props ) {
+function PostPickerButton( props ) {
 	const {
 		title = __( 'Select posts', 'block_editor_components' ),
 	} = props;

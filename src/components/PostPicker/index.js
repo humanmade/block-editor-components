@@ -324,7 +324,7 @@ export function PostPickerModal( props ) {
 /**
  * Post picker toolbar button.
  *
- * @param props
+ * @param props Component props.
  * @returns {ReactNode} Component
  */
 export function PostPickerToolbarButton( props ) {
@@ -361,7 +361,7 @@ export function PostPickerToolbarButton( props ) {
  * @param {object} props Component props
  * @returns {ReactNode} Component
  */
-function PostPickerButton( props ) {
+export function PostPickerButton( props ) {
 	const {
 		title = __( 'Select posts', 'block-editor-components' ),
 	} = props;
@@ -386,5 +386,3 @@ function PostPickerButton( props ) {
 		</>
 	);
 }
-
-export default PostPickerButton;

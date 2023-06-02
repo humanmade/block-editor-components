@@ -205,7 +205,7 @@ function BrowsePanel( props ) {
 
 	return (
 		<Flex
-			align="flex-start" s
+			align="flex-start"
 			style={ { gap: 24 } }
 		>
 			<FlexItem

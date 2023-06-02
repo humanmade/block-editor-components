@@ -92,7 +92,7 @@ function PostList( props ) {
 						<Notice
 							isDismissible={ false }
 						>
-							{ __( 'No results found' ) }
+							{ __( 'No results found', 'block-editor-components' ) }
 						</Notice>
 					)
 					|| (
@@ -329,7 +329,7 @@ export function PostPickerModal( props ) {
  */
 export function PostPickerToolbarButton( props ) {
 	const {
-		title = __( 'Select posts', 'block_editor_components' ),
+		title = __( 'Select posts', 'block-editor-components' ),
 		icon = 'edit',
 	} = props;
 
@@ -363,7 +363,7 @@ export function PostPickerToolbarButton( props ) {
  */
 function PostPickerButton( props ) {
 	const {
-		title = __( 'Select posts', 'block_editor_components' ),
+		title = __( 'Select posts', 'block-editor-components' ),
 	} = props;
 
 	const [ modalOpen, setModalOpen ] = useState( false );

@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 
 import { FormTokenField } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Generate a list of term IDs, keyed by title.
@@ -67,7 +68,7 @@ function TermSelector( props ) {
 	const selectedTerms = value.map( id => taxonomyTermsById[id] );
 
 	return ( <FormTokenField
-		label={ `Filter by ${ taxObject ? taxObject.labels.singular_name : '' }` }
+		label={ sprintf( __( 'Filter by %s', 'skyscanner' ), taxObject ? taxObject.labels.singular_name : '' ) }
 		suggestions={ Object.values( taxonomyTermsById ) }
 		value={ selectedTerms }
 		onChange={ terms => {

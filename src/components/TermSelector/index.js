@@ -68,7 +68,7 @@ function TermSelector( props ) {
 	const selectedTerms = value.map( id => taxonomyTermsById[id] );
 
 	return ( <FormTokenField
-		label={ sprintf( __( 'Filter by %s', 'skyscanner' ), taxObject ? taxObject.labels.singular_name : '' ) }
+		label={ sprintf( __( 'Filter by %s', 'block-editor-components' ), taxObject ? taxObject.labels.singular_name : '' ) }
 		suggestions={ Object.values( taxonomyTermsById ) }
 		value={ selectedTerms }
 		onChange={ terms => {

@@ -56,7 +56,7 @@ function PostList( props ) {
 						<Notice
 							isDismissible={ false }
 						>
-							{ __( 'No results found' ) }
+							{ __( 'No results found', 'block-editor-components' ) }
 						</Notice>
 					)
 					|| (
@@ -90,7 +90,7 @@ function PostList( props ) {
  */
 function PostPicker( props ) {
 	const {
-		title = __( 'Select posts', 'block_editor_components' ),
+		title = __( 'Select posts', 'block-editor-components' ),
 		postType = 'post',
 		taxonomies = [],
 		values,

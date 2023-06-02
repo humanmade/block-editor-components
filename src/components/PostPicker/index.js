@@ -243,18 +243,91 @@ function BrowsePanel( props ) {
 }
 
 /**
+ * Post Picker Modal Component.
+ *
+ * @param {object} props Props.
+ * @returns {ReactNode} Component
+ */
+export function PostPickerModal( props ) {
+	const {
+		title,
+		postType = 'post',
+		taxonomies = [],
+		values = [],
+		onChange,
+		setModalOpen,
+	} = props;
+
+	return (
+		<Modal
+			style={ {
+				width: '800px',
+				maxWidth: '100%',
+			} }
+			title={ title }
+			onRequestClose={ () => setModalOpen( false ) }
+		>
+			<div style={ { marginTop: -16 } }>
+				<TabPanel
+					tabs={ [
+						{
+							name: 'browse',
+							title: __( 'Browse Posts', 'skyscanner' ),
+							content: () => (
+								<>Foo</>
+							),
+						},
+						{
+							name: 'selection',
+							title: __( 'Current Selection', 'skyscanner' ),
+						},
+					] }
+				>
+					{ tabPanel => (
+						<div style={ {
+							marginTop: 'calc( var(--wp-admin-border-width-focus) * -1 )',
+							borderStyle: 'none',
+							borderTop: 'var( --wp-admin-border-width-focus ) solid #ddd',
+							paddingTop: 24,
+						} }>
+							{ tabPanel.name === 'browse' && (
+								<BrowsePanel
+									postType={ postType }
+									taxonomies={ taxonomies }
+									values={ values }
+									onChange={ onChange }
+								/>
+							) }
+
+							{ tabPanel.name === 'selection' && (
+								<PostList
+									isSortable
+									postType={ postType }
+									queryArgs={ {
+										include: values,
+										orderby: 'include',
+										per_page: values.length,
+									} }
+									values={ values }
+									onChange={ onChange }
+								/>
+							) }
+						</div>
+					) }
+				</TabPanel>
+			</div>
+		</Modal>
+	);
+}
+/**
  * Component allowing the selection of one or more posts
  *
  * @param {object} props Component props
  * @returns {ReactNode} Component
  */
-function PostPicker( props ) {
+function PostPickerButton( props ) {
 	const {
 		title = __( 'Select posts', 'block_editor_components' ),
-		postType = 'post',
-		taxonomies = [],
-		values,
-		onChange,
 	} = props;
 
 	const [ modalOpen, setModalOpen ] = useState( false );
@@ -268,64 +341,45 @@ function PostPicker( props ) {
 				{ title }
 			</Button>
 			{ modalOpen && (
-				<Modal
-					style={ {
-						width: '800px',
-						maxWidth: '100%',
-					} }
+				<PostPickerModal
+					{ ...props }
+					setModalOpen={ setModalOpen }
 					title={ title }
-					onRequestClose={ () => setModalOpen( false ) }
-				>
-					<div style={ { marginTop: -16 } }>
-						<TabPanel
-							tabs={ [
-								{
-									name: 'browse',
-									title: __( 'Browse Posts', 'skyscanner' ),
-								},
-								{
-									name: 'selection',
-									title: __( 'Current Selection', 'skyscanner' ),
-								},
-							] }
-						>
-							{ tabPanel => (
-								<div style={ {
-									marginTop: 'calc( var(--wp-admin-border-width-focus) * -1 )',
-									borderStyle: 'none',
-									borderTop: 'var( --wp-admin-border-width-focus ) solid #ddd',
-									paddingTop: 24,
-								} }>
-									{ tabPanel.name === 'browse' && (
-										<BrowsePanel
-											postType={ postType }
-											taxonomies={ taxonomies }
-											values={ values }
-											onChange={ onChange }
-										/>
-									) }
-
-									{ tabPanel.name === 'selection' && (
-										<PostList
-											isSortable
-											postType={ postType }
-											queryArgs={ {
-												include: values,
-												orderby: 'include',
-												per_page: values.length,
-											} }
-											values={ values }
-											onChange={ onChange }
-										/>
-									) }
-								</div>
-							) }
-						</TabPanel>
-					</div>
-				</Modal>
+				/>
 			) }
 		</>
 	);
 }
 
-export default PostPicker;
+/**
+ * Post picker toolbar button.
+ *
+ * @param props
+ */
+function PostPickerToolbarButton( props ) {
+	const {
+		title = __( 'Select posts', 'block_editor_components' ),
+	} = props;
+
+	const [ modalOpen, setModalOpen ] = useState( false );
+
+	return (
+		<>
+			<Button
+				variant="primary"
+				onClick={ () => setModalOpen( true ) }
+			>
+				{ title }
+			</Button>
+			{ modalOpen && (
+				<PostPickerModal
+					{ ...props }
+					setModalOpen={ setModalOpen }
+					title={ title }
+				/>
+			) }
+		</>
+	);
+}
+
+export default PostPickerButton;

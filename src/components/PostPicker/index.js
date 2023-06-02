@@ -64,7 +64,7 @@ function PostList( props ) {
 							<CheckboxControl
 								key={ post.id }
 								checked={ values.includes( post.id ) }
-								label={ post.title?.rendered || __( '( No title )', 'block-editor-components' ) }
+								label={ post.title?.rendered || __( '(No title)', 'block-editor-components' ) }
 								onChange={ ( checked ) => {
 									if ( checked ) {
 										onChange( [ ...values, post.id ] );

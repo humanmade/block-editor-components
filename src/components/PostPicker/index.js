@@ -159,7 +159,7 @@ function BrowsePanel( props ) {
 		taxonomies,
 	} = props;
 
-	const [ search, setSearch ] = useState();
+	const [ search, setSearch ] = useState( '' );
 
 	const taxObjects = useSelect( select => {
 		return taxonomies.map( taxonomy => select( 'core' ).getTaxonomy( taxonomy ) );
@@ -198,7 +198,7 @@ function BrowsePanel( props ) {
 	}, [ taxObjects, updateTaxQueryState, taxQueries ] );
 
 	const queryArgs = {
-		search,
+		search: search || undefined, // When empty, set as undefined to omit query var from API request.
 		per_page: 30,
 		...taxQueries,
 	};

@@ -14,10 +14,7 @@ import {
 	Spinner,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import {
-	useState,
-	useMemo,
-} from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import TermSelector from '../TermSelector';
@@ -148,8 +145,8 @@ function PostList( props ) {
 /**
  * Post Picker Browse Post Panel.
  *
- * @param props
- * @returns {ReactNode} Component
+ * @param {object} props Component props.
+ * @returns {ReactNode} Component.
  */
 function BrowsePanel( props ) {
 	const {
@@ -339,8 +336,8 @@ export function PostPickerToolbarButton( props ) {
 		<>
 			<ToolbarButton
 				icon={ icon }
-				onClick={ () => setModalOpen( true ) }
 				label={ title }
+				onClick={ () => setModalOpen( true ) }
 			>
 				{ title }
 			</ToolbarButton>

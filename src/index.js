@@ -1,6 +1,7 @@
 export { default as ConditionalComponent } from './components/ConditionalComponent';
 export { default as FetchAllTermSelectControl } from './components/FetchAllTermSelectControl';
 export { default as FileControls } from './components/FileControls';
+export { default as GenericServerSideEdit } from './components/GenericServerSideEdit';
 export { default as ImageControl } from './components/ImageControl';
 export { default as InnerBlockSlider } from './components/InnerBlockSlider';
 export { default as LinkToolbar } from './components/LinkToolbar';

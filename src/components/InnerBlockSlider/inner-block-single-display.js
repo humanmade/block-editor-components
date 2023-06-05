@@ -6,15 +6,15 @@ import { useInnerBlocksProps } from '@wordpress/block-editor';
 /**
  * InnerBlockSlider component.
  *
- * @param {object}            props                  Component props.
- * @param {string}            props.parentBlockId    Parent block clientId.
- * @param {string}            props.allowedBlocks    Allowed block types. See InnerBlocks.
- * @param {Array}             props.template         Initial block template. See InnerBlocks.
- * @param {boolean}           props.currentItemIndex Current Item
- * @param {boolean}           props.className        Class name.
- * @param {boolean|ReactNode} props.renderAppender   Appender.
- * @param {boolean}           props.captureToolbars  Passed through to inner block props.
- * @returns {import('react').ReactNode} Component.
+ * @param {object}                  props                  Component props.
+ * @param {string}                  props.parentBlockId    Parent block clientId.
+ * @param {string}                  props.allowedBlocks    Allowed block types. See InnerBlocks.
+ * @param {Array}                   props.template         Initial block template. See InnerBlocks.
+ * @param {boolean}                 props.currentItemIndex Current Item
+ * @param {boolean}                 props.className        Class name.
+ * @param {boolean|React.ReactNode} props.renderAppender   Appender.
+ * @param {boolean}                 props.captureToolbars  Passed through to inner block props.
+ * @returns {React.ReactNode} Component.
  */
 function InnerBlocksDisplaySingle( {
 	className,

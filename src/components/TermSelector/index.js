@@ -65,7 +65,7 @@ function TermSelector( props ) {
 		};
 	}, [ taxonomy ] );
 
-	const selectedTerms = value.map( id => taxonomyTermsById[id] );
+	const selectedTerms = value.map( id => taxonomyTermsById[id] ).filter( Boolean );
 
 	return ( <FormTokenField
 		label={ sprintf( __( 'Filter by %s', 'block-editor-components' ), taxObject ? taxObject.labels.singular_name : '' ) }

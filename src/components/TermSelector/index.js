@@ -1,27 +1,8 @@
 import React, { ReactNode } from 'react';
 
-import { FormTokenField } from '@wordpress/components';
+import { FormTokenField, Spinner } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
-
-/**
- * Generate a list of term IDs, keyed by title.
- *
- * @param {object[]} termObjects array of terms, returned from getEntityRecords.
- * @returns {Array} array of term IDs, keyed by title.
- */
-function generateTitleToIdMap( termObjects ) {
-
-	if ( ! termObjects ) {
-		return [];
-	}
-
-	return termObjects.reduce( ( accumulator, currentTerm ) => {
-		accumulator[currentTerm.name] = currentTerm.id;
-		return accumulator;
-	}, {} );
-
-}
 
 /**
  * Generate a list of term titles, keyed by id.
@@ -49,32 +30,40 @@ function generateIdToTitleMap( termObjects ) {
  */
 function TermSelector( props ) {
 	const { taxonomy, value = [], onChange } = props;
+	const taxQueryArgs = { per_page: 100 };
 
 	const taxObject = useSelect( select => {
 		return select( 'core' ).getTaxonomy( taxonomy );
 	}, [ taxonomy ] );
 
-	const { taxonomyTermsById, taxonomyTermsByTitle } = useSelect( ( select ) => {
-		const termObjects = select( 'core' ).getEntityRecords( 'taxonomy', taxonomy, { per_page: 100 } ) ?? [];
-		const taxonomyTermsById = generateIdToTitleMap( termObjects );
-		const taxonomyTermsByTitle = generateTitleToIdMap( termObjects );
-
+	const { taxonomyTermsById } = useSelect( ( select ) => {
+		const termObjects = select( 'core' ).getEntityRecords( 'taxonomy', taxonomy, taxQueryArgs ) ?? [];
 		return {
-			taxonomyTermsById,
-			taxonomyTermsByTitle,
+			taxonomyTermsById: generateIdToTitleMap( termObjects ),
 		};
+	}, [ taxonomy ] );
+
+	const isResolving = useSelect( ( select ) => {
+		return select( 'core/data' ).isResolving( 'core', 'getTaxonomy', [ taxonomy ] )
+			|| select( 'core/data' ).isResolving( 'core', 'getEntityRecords', [ 'taxonomy', taxonomy, taxQueryArgs ] );
 	}, [ taxonomy ] );
 
 	const selectedTerms = value.map( id => taxonomyTermsById[id] ).filter( Boolean );
 
-	return ( <FormTokenField
-		label={ sprintf( __( 'Filter by %s', 'block-editor-components' ), taxObject ? taxObject.labels.singular_name : '' ) }
-		suggestions={ Object.values( taxonomyTermsById ) }
-		value={ selectedTerms }
-		onChange={ terms => {
-			onChange( terms.map( term => taxonomyTermsByTitle[term] ) );
-		} }
-	/> );
+	return isResolving ? (
+		<Spinner />
+	) : (
+		<FormTokenField
+			label={ sprintf( __( 'Filter by %s', 'block-editor-components' ), taxObject ? taxObject.labels.singular_name : '' ) }
+			suggestions={ Object.values( taxonomyTermsById ) }
+			value={ selectedTerms }
+			onChange={ terms => {
+				const ids = Object.keys( taxonomyTermsById );
+				const values = Object.values( taxonomyTermsById );
+				onChange( terms.map( term => ids[ values.indexOf( term ) ] ).filter( Boolean ) );
+			} }
+		/>
+	);
 }
 
 export default TermSelector;

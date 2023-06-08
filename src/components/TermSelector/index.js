@@ -50,13 +50,13 @@ function TermSelector( props ) {
 
 	const selectedTerms = value.map( id => taxonomyTermsById[id] ).filter( Boolean );
 
-	return isResolving ? (
-		<Spinner />
-	) : (
+	return (
 		<FormTokenField
+			disabled={ isResolving }
 			label={ sprintf( __( 'Filter by %s', 'block-editor-components' ), taxObject ? taxObject.labels.singular_name : '' ) }
 			suggestions={ Object.values( taxonomyTermsById ) }
 			value={ selectedTerms }
+			placeholder={ isResolving ? sprintf( __( 'Loading %s…' ), taxObject.labels.name ) : null }
 			onChange={ terms => {
 				const ids = Object.keys( taxonomyTermsById );
 				const values = Object.values( taxonomyTermsById );

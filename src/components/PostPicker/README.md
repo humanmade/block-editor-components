@@ -8,7 +8,7 @@ There are several `PostPicker` controls.
 
 ## `PostPickerButton`
 
-```
+```jsx
 import { PostPickerButton } from '@humanmade/block-editor-components';
 
 ...

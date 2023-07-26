@@ -321,7 +321,7 @@ export function PostPickerModal( props ) {
 /**
  * Post picker toolbar button.
  *
- * @param props Component props.
+ * @param {object} props Props.
  * @returns {ReactNode} Component
  */
 export function PostPickerToolbarButton( props ) {

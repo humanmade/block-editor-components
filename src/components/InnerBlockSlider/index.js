@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 
 import { createBlock } from '@wordpress/blocks';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -10,11 +10,13 @@ import Navigation from './navigation';
 /**
  * InnerBlockSlider component.
  *
- * @param {object} props               Component props.
- * @param {string} props.parentBlockId Parent block clientId.
- * @param {string} props.allowedBlock  Allowed block type.
- * @param {Array}  props.template      Initial block template.
- * @param {number} props.slideLimit    Maximum allowed slides.
+ * @param {object} props                               Component props.
+ * @param {string} props.parentBlockId                 Parent block clientId.
+ * @param {string} props.allowedBlock                  Allowed block type.
+ * @param {Array}  props.template                      Initial block template.
+ * @param {number} props.slideLimit                    Maximum allowed slides.
+ * @param {number} props.externalCurrentItemIndex      Override current index, if managing this externally.
+ * @param {Function} props.setExternalCurrentItemIndex Override set item Index
  * @returns {React.ReactNode} Component.
  */
 const InnerBlockSlider = ( {
@@ -22,6 +24,8 @@ const InnerBlockSlider = ( {
 	allowedBlock,
 	template,
 	slideLimit,
+	externalCurrentItemIndex = null,
+	setExternalCurrentItemIndex = null,
 } ) => {
 	const innerBlockTemplate = template || [ [ allowedBlock ] ];
 
@@ -30,7 +34,17 @@ const InnerBlockSlider = ( {
 			select( 'core/block-editor' ).getBlock( parentBlockId ).innerBlocks
 	);
 
-	const [ currentItemIndex, setCurrentItemIndex ] = useState( 0 );
+	const [ internalCurrentItemIndex, setInternalCurrentItemIndex ] = useState( 0 );
+
+	// Current Item Index is either the internally managed index, OR the externally managed state.
+	const currentItemIndex = useMemo( () => {
+		return ( externalCurrentItemIndex !== null ) ? externalCurrentItemIndex : internalCurrentItemIndex;
+	}, [ externalCurrentItemIndex, internalCurrentItemIndex ] );
+
+	// Update current item index. Either the internally managed or externally managed state.
+	const setCurrentItemIndex = useMemo( () => {
+		return ( setExternalCurrentItemIndex !== null ) ? setExternalCurrentItemIndex : setInternalCurrentItemIndex;
+	}, [ setExternalCurrentItemIndex, setInternalCurrentItemIndex ] );
 
 	// Track state in a ref, to allow us to determine if slides are added or removed.
 	const slideCount = useRef( slideBlocks.length );
@@ -52,17 +66,19 @@ const InnerBlockSlider = ( {
 	useEffect( () => {
 		if ( slideBlocks.length > slideCount.current ) {
 			// Slide added
-			setCurrentItemIndex( slideBlocks.length - 1 );
+			const newIndex = slideBlocks.length - 1;
+			setCurrentItemIndex( newIndex );
 		} else if ( slideBlocks.length < slideCount.current ) {
 			// Slide deleted
 			if ( currentItemIndex + 1 > slideBlocks.length ) {
-				setCurrentItemIndex( slideBlocks.length - 1 );
+				const newIndex = slideBlocks.length - 1;
+				setCurrentItemIndex( newIndex );
 			}
 		}
 
 		// Update ref with new value..
 		slideCount.current = slideBlocks.length;
-	}, [ slideBlocks.length, currentItemIndex, slideCount ] );
+	}, [ slideBlocks.length, currentItemIndex, slideCount, setCurrentItemIndex ] );
 
 	return (
 		<div className="inner-block-slider">

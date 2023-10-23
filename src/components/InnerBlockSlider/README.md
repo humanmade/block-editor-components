@@ -103,7 +103,23 @@ The above example code creates a slider using the core image block as each slide
 | `allowedBlock`  | `string`       | `''`    | Block types to be allowed inside the slider   |
 | `slideLimit`    | `integer`      | `10`    | Maximum number of slides.                     |
 | `parentBlockId` | `string`       | `''`    | Client ID of parent block. This is required.  |
+| `externalCurrentItemIndex`    | `string`   | `null` | Optional. Current slide index. If you need to access to the current item index externally, then you need to manage that state externally. |
+| `setExternalCurrentItemIndex` | `function` | `null` | Optional. Function to update the current slide index. If you need to access to the current item index externally, then you need to manage that state externally.  |
 
+
+## Examples
+
+### Managing the state externally.
+
+```js
+const [ currentItemIndex, setCurrentItemIndex ] = useState( 0 );
+
+<InnerBlockSlider
+	parentBlockId={ clientId }
+	externalCurrentItemIndex={ currentItemIndex }
+	setExternalCurrentItemIndex={ setCurrentItemIndex }
+/>
+```
 
 ## Credit
 

@@ -43,18 +43,6 @@ const InnerBlockSlider = ( {
 	const { selectBlock } = useDispatch( 'core/block-editor' );
 	const [ currentItemIndex, setCurrentItemIndexState ] = useState( 0 );
 
-	/**
-	 * Update current item indx.
-	 *
-	 * Handles setting state and selecting the block.
-	 *
-	 * @param {number} newIndex New Index.
-	 */
-	const updateCurrentItemIndex = useCallback( ( newIndex ) => {
-		setCurrentItemIndexState( newIndex );
-		selectBlock( slideBlocks[ newIndex ].clientId );
-	}, [ setCurrentItemIndexState, selectBlock, slideBlocks ] );
-
 	// Track state in a ref, to allow us to determine if slides are added or removed.
 	const slideCount = useRef( slideBlocks.length );
 
@@ -75,17 +63,17 @@ const InnerBlockSlider = ( {
 	useEffect( () => {
 		if ( slideBlocks.length > slideCount.current ) {
 			// Slide added
-			updateCurrentItemIndex( slideBlocks.length - 1 );
-		} else if ( slideBlocks.length < slideCount.current ) {
+			setCurrentItemIndexState( slideBlocks.length - 1 );
+			selectBlock( slideBlocks[ slideBlocks.length - 1 ].clientId );
+		} else if ( slideBlocks.length < slideCount.current && currentItemIndex + 1 > slideBlocks.length ) {
 			// Slide deleted
-			if ( currentItemIndex + 1 > slideBlocks.length ) {
-				updateCurrentItemIndex( slideBlocks.length - 1 );
-			}
+			setCurrentItemIndexState( slideBlocks.length - 1 );
+			selectBlock( slideBlocks[ slideBlocks.length - 1 ].clientId );
 		}
 
 		// Update ref with new value..
 		slideCount.current = slideBlocks.length;
-	}, [ slideBlocks.length, currentItemIndex, slideCount, selectBlock, updateCurrentItemIndex ] );
+	}, [ slideBlocks.length, currentItemIndex, slideCount, selectBlock, setCurrentItemIndexState, slideBlocks ] );
 
 	/**
 	 * If the selected block ID changes to either a slideBlock, or an Innerblock of a slide, focus that slide.
@@ -96,9 +84,9 @@ const InnerBlockSlider = ( {
 		} );
 
 		if ( found >= 0 ) {
-			updateCurrentItemIndex( found );
+			setCurrentItemIndexState( found );
 		}
-	}, [ selectedBlockId, slideBlocks, updateCurrentItemIndex, hasSelectedInnerBlock ] );
+	}, [ selectedBlockId, slideBlocks, setCurrentItemIndexState, hasSelectedInnerBlock ] );
 
 	return (
 		<div className="inner-block-slider">

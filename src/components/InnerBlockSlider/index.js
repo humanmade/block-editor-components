@@ -25,14 +25,22 @@ const InnerBlockSlider = ( {
 } ) => {
 	const innerBlockTemplate = template || [ [ allowedBlock ] ];
 
-	const slideBlocks = useSelect(
-		( select ) =>
-			select( 'core/block-editor' ).getBlock( parentBlockId ).innerBlocks
+	const {
+		slideBlocks,
+		selectedBlockId,
+		hasSelectedInnerBlock,
+	 } = useSelect(
+		( select ) => {
+			const blockEditorStore = select( 'core/block-editor' );
+			return {
+				slideBlocks: blockEditorStore.getBlock( parentBlockId ).innerBlocks,
+				selectedBlockId: blockEditorStore.getSelectedBlockClientId(),
+				hasSelectedInnerBlock: blockEditorStore.hasSelectedInnerBlock,
+			};
+		}
 	);
 
-	const selectedBlockId = useSelect( ( select ) => select( 'core/block-editor' ).getSelectedBlockClientId() );
 	const { selectBlock } = useDispatch( 'core/block-editor' );
-
 	const [ currentItemIndex, setCurrentItemIndexState ] = useState( 0 );
 
 	/**
@@ -80,15 +88,17 @@ const InnerBlockSlider = ( {
 	}, [ slideBlocks.length, currentItemIndex, slideCount, selectBlock, updateCurrentItemIndex ] );
 
 	/**
-	 * If the selected block ID changes, and matches a
+	 * If the selected block ID changes to either a slideBlock, or an Innerblock of a slide, focus that slide.
 	 */
 	useEffect( () => {
-		const found = slideBlocks.findIndex( ( block ) => block.clientId === selectedBlockId );
+		const found = slideBlocks.findIndex( ( slideBlock ) => {
+			return slideBlock.clientId === selectedBlockId || hasSelectedInnerBlock( slideBlock.clientId );
+		} );
 
 		if ( found >= 0 ) {
 			updateCurrentItemIndex( found );
 		}
-	}, [ selectedBlockId, slideBlocks, updateCurrentItemIndex ] );
+	}, [ selectedBlockId, slideBlocks, updateCurrentItemIndex, hasSelectedInnerBlock ] );
 
 	return (
 		<div className="inner-block-slider">

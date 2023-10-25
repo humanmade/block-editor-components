@@ -44,6 +44,25 @@ When you're done, you can unlink the package by running the following:
 npm unlink @humanmade/block-editor-components
 ```
 
+**Note on usage with `@humanmade/webpack-helpers`:** You may hit eslint errors trying to build your assets when linked to a local copy of this. As a workaround, you need to restrict eslint to the current project directory when configuring your webpack build. Do this by filtering the loader options. 
+
+```
+const path = require( 'node:path' );
+
+presets.production( {
+    // ...
+}, {
+    filterLoaders: ( loader, loaderType ) => {
+        // Handle symlinked node_modules.
+        if ( loaderType === 'eslint' ) {
+            loader.include = path.dirname( path.resolve( __dirname ) );
+        }
+
+        return loader;
+    }
+} );
+```
+
 ### Automatic Build
 
 Whilst developing, it is useful have Webpack watch for changes and rebuild the distributed files automatically.

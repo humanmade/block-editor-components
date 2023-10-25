@@ -27,14 +27,11 @@ const InnerBlockSlider = ( {
 	slideLimit,
 	currentItemIndex,
 	setCurrentItemIndex,
-	showNavigation ,
+	showNavigation,
 } ) => {
 	const innerBlockTemplate = template || [ [ allowedBlock ] ];
 
-	const slideBlocks = useSelect(
-		( select ) =>
-			select( 'core/block-editor' ).getBlock( parentBlockId ).innerBlocks
-	);
+	const slideBlocks = useSelect( ( select ) => select( 'core/block-editor' ).getBlock( parentBlockId ).innerBlocks );
 
 	// Track state in a ref, to allow us to determine if slides are added or removed.
 	const slideCount = useRef( slideBlocks.length );
@@ -80,15 +77,16 @@ const InnerBlockSlider = ( {
 				template={ innerBlockTemplate }
 			/>
 
-			<Navigation
-				addSlide={ addSlide }
-				addSlideEnabled={ slideBlocks.length < slideLimit }
-				currentPage={ currentItemIndex + 1 }
-				nextEnabled={ currentItemIndex + 1 < slideBlocks.length }
-				prevEnabled={ currentItemIndex + 1 > 1 }
-				setCurrentPage={ ( page ) => setCurrentItemIndex( page - 1 ) }
-				totalPages={ slideBlocks.length }
-			/>
+			{ showNavigation && (
+				<Navigation
+					addSlide={ addSlide }
+					addSlideEnabled={ slideBlocks.length < slideLimit }
+					currentPage={ currentItemIndex + 1 }
+					nextEnabled={ currentItemIndex + 1 < slideBlocks.length }
+					prevEnabled={ currentItemIndex + 1 > 1 }
+					setCurrentPage={ ( page ) => setCurrentItemIndex( page - 1 ) }
+					totalPages={ slideBlocks.length }
+				/> ) }
 		</div>
 	);
 };
@@ -105,7 +103,7 @@ InnerBlockSlider.propTypes = {
 	template: PropTypes.array,
 	showNavigation: PropTypes.bool,
 	currentItemIndex: PropTypes.number.isRequired,
-	setCurrentItemIndex: PropTypes.function.isRequired,
+	setCurrentItemIndex: PropTypes.func.isRequired,
 };
 
 export default InnerBlockSlider;

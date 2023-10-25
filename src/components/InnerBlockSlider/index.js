@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { createBlock } from '@wordpress/blocks';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -104,7 +104,10 @@ const InnerBlockSlider = ( {
 				currentPage={ currentItemIndex + 1 }
 				nextEnabled={ currentItemIndex + 1 < slideBlocks.length }
 				prevEnabled={ currentItemIndex + 1 > 1 }
-				setCurrentPage={ ( page ) => updateCurrentItemIndex( page - 1 ) }
+				setCurrentPage={ ( page ) => {
+					setCurrentItemIndexState( page - 1 );
+					selectBlock( slideBlocks[ page - 1 ].clientId );
+				} }
 				totalPages={ slideBlocks.length }
 			/>
 		</div>

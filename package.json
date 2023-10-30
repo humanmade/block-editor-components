@@ -1,6 +1,6 @@
 {
 	"name": "@humanmade/block-editor-components",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "Reusable components, hooks and helper functions for the WordPress block editor(s).",
 	"keywords": [
 		"block editor",
@@ -21,7 +21,7 @@
 		"start": "webpack watch --mode development",
 		"lint": "eslint .",
 		"test": "jest",
-		"version": "npm run build && git add -f dist/"
+		"version": "npm run build"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-class-properties": "^7.18.6",

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import InnerBlockSlider from './inner-block-slider.js';
+import InnerBlockSliderControlled from './inner-block-slider-controlled.js';
 
 /**
  * InnerBlockSlider container component.
@@ -11,11 +11,11 @@ import InnerBlockSlider from './inner-block-slider.js';
  * @param {object} props      Component props.
  * @returns {React.ReactNode} Component.
  */
-const InnerBlockSliderContainer = ( props ) => {
+const InnerBlockSlider = ( props ) => {
 	const [ currentItemIndex, setCurrentItemIndex ] = useState( 0 );
 
 	return (
-		<InnerBlockSlider
+		<InnerBlockSliderControlled
 			{ ...props }
 			currentItemIndex={ currentItemIndex }
 			setCurrentItemIndex={ setCurrentItemIndex }
@@ -23,4 +23,7 @@ const InnerBlockSliderContainer = ( props ) => {
 	);
 };
 
-export default InnerBlockSliderContainer;
+// Make controlled component available for use.
+InnerBlockSlider.Controlled = InnerBlockSliderControlled;
+
+export default InnerBlockSlider;

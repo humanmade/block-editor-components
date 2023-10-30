@@ -20,7 +20,7 @@ import Navigation from './navigation';
  * @param {Function} props.showNavigation      Override display nav
  * @returns {React.ReactNode} Component.
  */
-const InnerBlockSlider = ( {
+const InnerBlockSliderControlled = ( {
 	parentBlockId,
 	allowedBlock,
 	template,
@@ -91,13 +91,13 @@ const InnerBlockSlider = ( {
 	);
 };
 
-InnerBlockSlider.defaultProps = {
+InnerBlockSliderControlled.defaultProps = {
 	slideLimit: 10,
 	template: null,
 	showNavigation: true,
 };
 
-InnerBlockSlider.propTypes = {
+InnerBlockSliderControlled.propTypes = {
 	parentBlockId: PropTypes.string.isRequired,
 	allowedBlock: PropTypes.string.isRequired,
 	template: PropTypes.array,
@@ -106,4 +106,4 @@ InnerBlockSlider.propTypes = {
 	setCurrentItemIndex: PropTypes.func.isRequired,
 };
 
-export default InnerBlockSlider;
+export default InnerBlockSliderControlled;

@@ -98,12 +98,31 @@ The above example code creates a slider using the core image block as each slide
 
 ## Props
 
-| Name            | Type           | Default | Description                                   |
-| --------------- | -------------- | ------- | --------------------------------------------- |
-| `allowedBlock`  | `string`       | `''`    | Block types to be allowed inside the slider   |
-| `slideLimit`    | `integer`      | `10`    | Maximum number of slides.                     |
-| `parentBlockId` | `string`       | `''`    | Client ID of parent block. This is required.  |
+| Name             | Type           | Default | Description                                   |
+| ---------------- | -------------- | ------- | --------------------------------------------- |
+| `allowedBlock`   | `string`       | `''`    | Block types to be allowed inside the slider   |
+| `slideLimit`     | `integer`      | `10`    | Maximum number of slides.                     |
+| `parentBlockId`  | `string`       | `''`    | Client ID of parent block. This is required.  |
+| `showNavigation` | `bool`         | `true`  | Whether to show slide navigation/pagination.  |
 
+## Examples
+
+### Managing the state externally.
+
+If you need to sync the slider component state it with some other external functionality, you may need to manage state in your code. In order to to this, you need to import the InnerBlockSliderStateless rather than the standard container component exposed by the library.
+
+```js
+import InnerBlockSliderStateless from '@humanmade/block-editor-components';
+
+const [ currentItemIndex, setCurrentItemIndex ] = useState( 0 );
+
+<InnerBlockSlider
+	// ... other props
+	parentBlockId={ clientId }
+	currentItemIndex={ currentItemIndex }
+	setCurrentItemIndex={ setCurrentItemIndex }
+/>
+```
 
 ## Credit
 

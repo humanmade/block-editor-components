@@ -21,7 +21,7 @@
 		"start": "webpack watch --mode development",
 		"lint": "eslint .",
 		"test": "jest",
-		"version": "npm run build && git add -f dist/"
+		"version": "npm run build"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-class-properties": "^7.18.6",

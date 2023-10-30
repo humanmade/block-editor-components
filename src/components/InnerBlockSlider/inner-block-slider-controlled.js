@@ -34,14 +34,14 @@ const InnerBlockSliderControlled = ( {
 	const {
 		slideBlocks,
 		selectedBlockId,
-		hasSelectedInnerBlock,
+		getLowestCommonAncestorWithSelectedBlock,
 	 } = useSelect(
 		( select ) => {
 			const blockEditorStore = select( 'core/block-editor' );
 			return {
 				slideBlocks: blockEditorStore.getBlock( parentBlockId ).innerBlocks,
 				selectedBlockId: blockEditorStore.getSelectedBlockClientId(),
-				hasSelectedInnerBlock: blockEditorStore.hasSelectedInnerBlock,
+				getLowestCommonAncestorWithSelectedBlock: blockEditorStore.getLowestCommonAncestorWithSelectedBlock,
 			};
 		}
 	);
@@ -89,13 +89,13 @@ const InnerBlockSliderControlled = ( {
 	 */
 	useEffect( () => {
 		const found = slideBlocks.findIndex( ( slideBlock ) => {
-			return slideBlock.clientId === selectedBlockId || hasSelectedInnerBlock( slideBlock.clientId );
+			return getLowestCommonAncestorWithSelectedBlock( slideBlock.clientId ) === slideBlock.clientId;
 		} );
 
 		if ( found >= 0 ) {
 			setCurrentItemIndex( found );
 		}
-	}, [ selectedBlockId, slideBlocks, setCurrentItemIndex, hasSelectedInnerBlock ] );
+	}, [ selectedBlockId, slideBlocks, setCurrentItemIndex, getLowestCommonAncestorWithSelectedBlock ] );
 
 	return (
 		<div className="inner-block-slider">

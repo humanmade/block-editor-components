@@ -109,14 +109,14 @@ The above example code creates a slider using the core image block as each slide
 
 ### Managing the state externally.
 
-If you need to sync the slider component state it with some other external functionality, you may need to manage state in your code. In order to to this, you need to import the InnerBlockSliderStateless rather than the standard container component exposed by the library.
+If you need to sync the slider component state it with some other external functionality, you may need to manage state in your code. In order to to this, you need to use the `InnerBlockSlider.Controlled` component rather than the standard container component exposed by the library.
 
 ```js
-import InnerBlockSliderStateless from '@humanmade/block-editor-components';
+import InnerBlockSlider from '@humanmade/block-editor-components';
 
 const [ currentItemIndex, setCurrentItemIndex ] = useState( 0 );
 
-<InnerBlockSlider
+<InnerBlockSlider.Controlled
 	// ... other props
 	parentBlockId={ clientId }
 	currentItemIndex={ currentItemIndex }

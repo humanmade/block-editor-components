@@ -1,6 +1,6 @@
 {
 	"name": "@humanmade/block-editor-components",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"description": "Reusable components, hooks and helper functions for the WordPress block editor(s).",
 	"keywords": [
 		"block editor",
@@ -25,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-class-properties": "^7.18.6",
+		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 		"@humanmade/eslint-config": "^1.1.3",
 		"@wordpress/babel-preset-default": "^7.14.0",
 		"@wordpress/data": "^7.4.0",

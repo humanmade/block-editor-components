@@ -31,7 +31,22 @@ const InnerBlockSliderControlled = ( {
 } ) => {
 	const innerBlockTemplate = template || [ [ allowedBlock ] ];
 
-	const slideBlocks = useSelect( ( select ) => select( 'core/block-editor' ).getBlock( parentBlockId ).innerBlocks );
+	const {
+		slideBlocks,
+		selectedBlockId,
+		getLowestCommonAncestorWithSelectedBlock,
+	 } = useSelect(
+		( select ) => {
+			const blockEditorStore = select( 'core/block-editor' );
+			return {
+				slideBlocks: blockEditorStore.getBlock( parentBlockId ).innerBlocks,
+				selectedBlockId: blockEditorStore.getSelectedBlockClientId(),
+				getLowestCommonAncestorWithSelectedBlock: blockEditorStore.getLowestCommonAncestorWithSelectedBlock,
+			};
+		}
+	);
+
+	const { selectBlock } = useDispatch( 'core/block-editor' );
 
 	// Track state in a ref, to allow us to determine if slides are added or removed.
 	const slideCount = useRef( slideBlocks.length );
@@ -55,17 +70,32 @@ const InnerBlockSliderControlled = ( {
 			// Slide added
 			const newIndex = slideBlocks.length - 1;
 			setCurrentItemIndex( newIndex );
+			selectBlock( slideBlocks[ newIndex ].clientId );
 		} else if ( slideBlocks.length < slideCount.current ) {
 			// Slide deleted
 			if ( currentItemIndex + 1 > slideBlocks.length ) {
 				const newIndex = slideBlocks.length - 1;
 				setCurrentItemIndex( newIndex );
+				selectBlock( slideBlocks[ newIndex ].clientId );
 			}
 		}
 
 		// Update ref with new value..
 		slideCount.current = slideBlocks.length;
-	}, [ slideBlocks.length, currentItemIndex, slideCount, setCurrentItemIndex ] );
+	}, [ slideBlocks.length, currentItemIndex, slideCount, setCurrentItemIndex, selectBlock, slideBlocks ] );
+
+	/**
+	 * If the selected block ID changes to either a slideBlock, or an Innerblock of a slide, focus that slide.
+	 */
+	useEffect( () => {
+		const found = slideBlocks.findIndex( ( slideBlock ) => {
+			return getLowestCommonAncestorWithSelectedBlock( slideBlock.clientId ) === slideBlock.clientId;
+		} );
+
+		if ( found >= 0 ) {
+			setCurrentItemIndex( found );
+		}
+	}, [ selectedBlockId, slideBlocks, setCurrentItemIndex, getLowestCommonAncestorWithSelectedBlock ] );
 
 	return (
 		<div className="inner-block-slider">
@@ -84,7 +114,10 @@ const InnerBlockSliderControlled = ( {
 					currentPage={ currentItemIndex + 1 }
 					nextEnabled={ currentItemIndex + 1 < slideBlocks.length }
 					prevEnabled={ currentItemIndex + 1 > 1 }
-					setCurrentPage={ ( page ) => setCurrentItemIndex( page - 1 ) }
+					setCurrentPage={ ( page ) => {
+						setCurrentItemIndex( page - 1 );
+						selectBlock( slideBlocks[ page - 1 ].clientId );
+					} }
 					totalPages={ slideBlocks.length }
 				/> ) }
 		</div>

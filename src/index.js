@@ -21,6 +21,7 @@ export { default as useActiveBlockStyle } from './hooks/useActiveBlockStyle';
 export { default as useBlockStyles } from './hooks/useBlockStyles';
 export { default as useDisallowedBlocks } from './hooks/useDisallowedBlocks';
 export { default as useMeta } from './hooks/useMeta';
+export { default as usePostThumbnail } from './hooks/usePostThumbnail';
 export { default as useRenderAppenderWithBlockLimit } from './hooks/useRenderAppenderWithBlockLimit';
 export { default as useSelectBlock } from './hooks/useSelectBlock';
 export { default as useSetAttribute } from './hooks/useSetAttribute';

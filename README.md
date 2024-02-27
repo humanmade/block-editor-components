@@ -48,6 +48,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 - [`InnerBlockSlider`](src/components/InnerBlockSlider)
 - [`LinkToolbar`](src/components/LinkToolbar)
 - [`PlainTextWithLimit`](src/components/PlainTextWithLimit)
+- [`PostPicker`](src/components/PostPicker)
 - [`PostTitleControl`](src/components/PostTitleControl)
 - [`PostTypeCheck`](src/components/PostTypeCheck)
 - [`RichTextWithLimit`](src/components/RichTextWithLimit)

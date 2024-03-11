@@ -20,3 +20,10 @@ updates:
     # Prefix all commit messages with "npm":
     commit-message:
       prefix: "npm"
+    groups:
+      wordpress:
+        patterns:
+          - "@wordpress/*"
+      dependencies:
+        patterns:
+          - "*"

@@ -198,6 +198,7 @@ function BrowsePanel( props ) {
 		search: search || undefined, // When empty, set as undefined to omit query var from API request.
 		per_page: 30,
 		...taxQueries,
+		context: 'view',
 	};
 
 	return (

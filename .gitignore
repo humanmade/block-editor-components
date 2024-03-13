@@ -2,7 +2,7 @@
 *.log
 /.idea/
 /.vscode/
-/dist/index.asset.php
+/dist/
 /node_modules/
 /vendor/
 /dist/

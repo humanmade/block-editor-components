@@ -9,3 +9,4 @@
 /.nvmrc
 /babel.config.js
 /webpack.config.js
+/dist/

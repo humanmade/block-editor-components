@@ -42,6 +42,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 ## Components
 
 - [`ConditionalComponent`](src/components/ConditionalComponent)
+- [`DateTimeControl`](src/components/DateTimeControl)
 - [`FetchAllTermSelectControl`](src/components/FetchAllTermSelectControl)
 - [`FileControls`](src/components/FileControls)
 - [`ImageControl`](src/components/ImageControl)

@@ -2,6 +2,7 @@ export { default as ConditionalComponent } from './components/ConditionalCompone
 export { default as FetchAllTermSelectControl } from './components/FetchAllTermSelectControl';
 export { default as FileControls } from './components/FileControls';
 export { default as GenericServerSideEdit } from './components/GenericServerSideEdit';
+export { default as DateTimeControl } from './components/DateTimeControl';
 export { default as ImageControl } from './components/ImageControl';
 export { default as InnerBlockSlider } from './components/InnerBlockSlider';
 export { default as InnerBlocksDisplaySingle } from './components/InnerBlockSlider/inner-block-single-display';

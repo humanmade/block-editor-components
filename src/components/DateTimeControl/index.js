@@ -15,15 +15,23 @@ import TimeZone from './timezone';
  *
  * @param {object} props - Component properties.
  * @param {string} props.label - The label for the date/time control.
+ * @param {string} [props.editButtonText] - The text for the edit/set button. (optional)
  * @param {string} props.id - The ID for the base control.
  * @param {Function} props.onChange - Callback function to handle date/time change.
  * @param {string} props.value - The current date/time value in UTC format.
  *
  * @returns {ReactNode|null} The DateTimeControl component.
  */
-function DateTimeControl( { label, id, onChange, value } ) {
+function DateTimeControl( {
+	editButtonText,
+	label,
+	id,
+	onChange,
+	value,
+} ) {
 	const [ isDatePickerVisible, setIsDatePickerVisible ] = useState( false );
 	const dateSettings = getDateSettings();
+	const defaultEditButtonText = value ? __( 'Edit date', 'block-editor-components' ) : __( 'Set date', 'block-editor-components' );
 
 	/**
 	 * Convert a date string in the current site local time into a UTC formatted as a MySQL date.
@@ -63,11 +71,11 @@ function DateTimeControl( { label, id, onChange, value } ) {
 			) }
 
 			<Button
+				style={ { display: 'block' } }
 				variant="link"
-				onClick={ () =>
-					setIsDatePickerVisible( ! isDatePickerVisible ) }
+				onClick={ () => setIsDatePickerVisible( ! isDatePickerVisible ) }
 			>
-				{ __( 'Edit webinar start time/date', 'block-editor-components' ) }
+				{ editButtonText ? editButtonText : defaultEditButtonText }
 			</Button>
 
 			{ isDatePickerVisible && (

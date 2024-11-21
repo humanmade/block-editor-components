@@ -10,6 +10,8 @@ Block Editor Components - Contribution Guide
 
 ## Local Development
 
+**NOTE: This workflow doesn't seem to actually be working**
+
 You can contribute to Block Editor Components whilst working on a project that is using it with [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link).
 
 Setting this up is a two-part process.
@@ -44,7 +46,9 @@ When you're done, you can unlink the package by running the following:
 npm unlink @humanmade/block-editor-components
 ```
 
-**Note on usage with `@humanmade/webpack-helpers`:** You may hit eslint errors trying to build your assets when linked to a local copy of this. As a workaround, you need to restrict eslint to the current project directory when configuring your webpack build. Do this by filtering the loader options. 
+**Note on usage with `@humanmade/webpack-helpers`:** You may hit errors trying to build your assets when linked to a local copy of this. 
+
+For ESLint errors you can work around by restricting eslint to the current project directory when configuring your webpack build. Do this by filtering the loader options. 
 
 ```
 const path = require( 'node:path' );

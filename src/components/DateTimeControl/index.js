@@ -20,7 +20,7 @@ import TimeZone from './timezone';
  * @param {Function} props.onChange - Callback function to handle date/time change.
  * @param {string} props.value - The current date/time value in UTC format.
  *
- * @returns {ReactNode|null} The DateTimeControl component.
+ * @returns {React.ReactNode|null} The DateTimeControl component.
  */
 function DateTimeControl( {
 	editButtonText,

@@ -8,7 +8,7 @@ import { __ } from '@wordpress/i18n';
  * This component determines the user's timezone offset and compares it with the system timezone offset.
  * If they match, it returns null. Otherwise, it displays the timezone abbreviation and details in a tooltip.
  *
- * @returns {ReactNode|null} The timezone abbreviation and details in a tooltip, or null if the user's timezone matches the system timezone.
+ * @returns {React.ReactNode|null} The timezone abbreviation and details in a tooltip, or null if the user's timezone matches the system timezone.
  */
 const TimeZone = () => {
 	const { timezone } = getDateSettings();

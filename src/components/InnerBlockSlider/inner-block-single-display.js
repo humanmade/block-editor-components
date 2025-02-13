@@ -68,7 +68,7 @@ function InnerBlocksDisplaySingle( {
 		for ( let i = 1; i <= perPage; i++ ) {
 			style += `:nth-child(${ currentItemIndex + i }), `;
 		}
-		style = style.slice( 0, -2 ) + ')';
+		style = style.slice( 0, -2 ) + ')'; // Slice to remove trailing comma and space.
 		style += '{ display: none; }';
 
 		styleRef.current.innerHTML = `${style}`;

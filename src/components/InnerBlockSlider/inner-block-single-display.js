@@ -14,16 +14,18 @@ import { useInnerBlocksProps } from '@wordpress/block-editor';
  * @param {boolean}                 props.className        Class name.
  * @param {boolean|React.ReactNode} props.renderAppender   Appender.
  * @param {boolean}                 props.captureToolbars  Passed through to inner block props.
+ * @param {number}                  props.perPage          Number of items to display per page.
  * @returns {React.ReactNode} Component.
  */
 function InnerBlocksDisplaySingle( {
 	className,
 	allowedBlocks,
 	template,
-	currentItemIndex,
+	currentItemIndex = 0,
 	parentBlockId,
-	renderAppender,
-	captureToolbars,
+	renderAppender = false,
+	captureToolbars = true,
+	perPage = 1,
 } ) {
 	const styleRef = useRef();
 
@@ -42,15 +44,35 @@ function InnerBlocksDisplaySingle( {
 		}
 	);
 
+	/**
+	 * Construct the CSS for this component.
+	 *
+	 * Hide all slides except the current active slide.
+	 * Account for pages - show current slide + perPage slides.
+	 * Display grid if perPage > 1.
+	 */
 	useEffect( () => {
 		if ( ! styleRef.current ) {
 			return;
 		}
 
-		styleRef.current.innerHTML = `#inner-block-display-single-${ parentBlockId } > *:not(:nth-child(${
-			currentItemIndex + 1
-		}) ) { display: none; }`;
-	}, [ currentItemIndex, styleRef, parentBlockId ] );
+		const containerSelector = `#inner-block-display-single-${ parentBlockId }`;
+
+		let style = '';
+
+		if ( perPage > 1 ) {
+			style += `${containerSelector} { display: grid; grid-template-columns: repeat(${ perPage }, 1fr); gap: 1em; }`;
+		}
+
+		style += `${containerSelector} > *:not(`;
+		for ( let i = 1; i <= perPage; i++ ) {
+			style += `:nth-child(${ currentItemIndex + i }), `;
+		}
+		style = style.slice( 0, -2 ) + ')'; // Slice to remove trailing comma and space.
+		style += '{ display: none; }';
+
+		styleRef.current.innerHTML = `${style}`;
+	}, [ currentItemIndex, styleRef, parentBlockId, perPage ] );
 
 	return (
 		<>
@@ -59,12 +81,6 @@ function InnerBlocksDisplaySingle( {
 		</>
 	);
 }
-
-InnerBlocksDisplaySingle.defaultProps = {
-	currentItemIndex: 0,
-	renderAppender: false,
-	captureToolbars: true,
-};
 
 InnerBlocksDisplaySingle.propTypes = {
 	parentBlockId: PropTypes.string.isRequired,
@@ -76,6 +92,7 @@ InnerBlocksDisplaySingle.propTypes = {
 		PropTypes.bool,
 		PropTypes.element,
 	] ),
+	perPage: PropTypes.number,
 };
 
 export default InnerBlocksDisplaySingle;

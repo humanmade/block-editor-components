@@ -106,8 +106,8 @@ const InnerBlockSliderControlled = ( {
 				className="slides"
 				currentItemIndex={ currentItemIndex }
 				parentBlockId={ parentBlockId }
-				template={ innerBlockTemplate }
 				perPage={ perPage }
+				template={ innerBlockTemplate }
 			/>
 
 			{ showNavigation && (

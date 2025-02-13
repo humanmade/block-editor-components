@@ -14,7 +14,7 @@
 		"name": "Human Made",
 		"url": "https://humanmade.com"
 	},
-	"main": "dist/index.js",
+	"main": "src/index.js",
 	"repository": "github:humanmade/block-editor-components",
 	"scripts": {
 		"build": "webpack",

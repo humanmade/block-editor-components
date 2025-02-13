@@ -54,7 +54,7 @@ function InnerBlocksDisplaySingle( {
 		let style = '';
 
 		if ( perPage > 1 ) {
-			style += `${containerSelector} { display: grid; grid-template-columns: repeat(${ perPage }, 1fr); }`;
+			style += `${containerSelector} { display: grid; grid-template-columns: repeat(${ perPage }, 1fr); gap: 1em; }`;
 		}
 
 		style += `${containerSelector} > *:not(`;
@@ -65,7 +65,7 @@ function InnerBlocksDisplaySingle( {
 		style += '{ display: none; }';
 
 		styleRef.current.innerHTML = `${style}`;
-	}, [ currentItemIndex, styleRef, parentBlockId, perPage ]);
+	}, [ currentItemIndex, styleRef, parentBlockId, perPage ] );
 
 	return (
 		<>

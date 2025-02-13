@@ -44,6 +44,13 @@ function InnerBlocksDisplaySingle( {
 		}
 	);
 
+	/**
+	 * Construct the CSS for this component.
+	 *
+	 * Hide all slides except the current active slide.
+	 * Account for pages - show current slide + perPage slides.
+	 * Display grid if perPage > 1.
+	 */
 	useEffect( () => {
 		if ( ! styleRef.current ) {
 			return;

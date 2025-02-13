@@ -104,6 +104,7 @@ The above example code creates a slider using the core image block as each slide
 | `slideLimit`     | `integer`      | `10`    | Maximum number of slides.                     |
 | `parentBlockId`  | `string`       | `''`    | Client ID of parent block. This is required.  |
 | `showNavigation` | `bool`         | `true`  | Whether to show slide navigation/pagination.  |
+| `perPage`        | `integer`      | `1`     | Show multiple slides per page.                |
 
 ## Examples
 

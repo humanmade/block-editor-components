@@ -10,24 +10,26 @@ import Navigation from './navigation';
 /**
  * InnerBlockSlider component.
  *
- * @param {object} props                       Component props.
- * @param {string} props.parentBlockId         Parent block clientId.
- * @param {string} props.allowedBlock          Allowed block type.
- * @param {Array}  props.template              Initial block template.
- * @param {number} props.slideLimit            Maximum allowed slides.
- * @param {number} props.currentItemIndex      Override current index, if managing this externally.
+ * @param {object}   props                     Component props.
+ * @param {string}   props.parentBlockId       Parent block clientId.
+ * @param {string}   props.allowedBlock        Allowed block type.
+ * @param {Array}    props.template            Initial block template.
+ * @param {number}   props.slideLimit          Maximum allowed slides.
+ * @param {number}   props.currentItemIndex    Override current index, if managing this externally.
  * @param {Function} props.setCurrentItemIndex Override set item Index
  * @param {Function} props.showNavigation      Override display nav
+ * @param {number}   props.perPage             Number of items to display per page.
  * @returns {React.ReactNode} Component.
  */
 const InnerBlockSliderControlled = ( {
 	parentBlockId,
 	allowedBlock,
 	template,
-	slideLimit,
+	slideLimit = 10,
 	currentItemIndex,
 	setCurrentItemIndex,
-	showNavigation,
+	showNavigation = true,
+	perPage = 1,
 } ) => {
 	const innerBlockTemplate = template || [ [ allowedBlock ] ];
 
@@ -105,6 +107,7 @@ const InnerBlockSliderControlled = ( {
 				currentItemIndex={ currentItemIndex }
 				parentBlockId={ parentBlockId }
 				template={ innerBlockTemplate }
+				perPage={ perPage }
 			/>
 
 			{ showNavigation && (
@@ -122,12 +125,6 @@ const InnerBlockSliderControlled = ( {
 				/> ) }
 		</div>
 	);
-};
-
-InnerBlockSliderControlled.defaultProps = {
-	slideLimit: 10,
-	template: null,
-	showNavigation: true,
 };
 
 InnerBlockSliderControlled.propTypes = {

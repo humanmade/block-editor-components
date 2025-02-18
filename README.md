@@ -53,6 +53,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 - [`PostTitleControl`](src/components/PostTitleControl)
 - [`PostTypeCheck`](src/components/PostTypeCheck)
 - [`RichTextWithLimit`](src/components/RichTextWithLimit)
+- [`TermSearchControl`](src/components/TermSearchControl)
 
 ## Hooks
 

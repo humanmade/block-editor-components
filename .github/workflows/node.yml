@@ -36,7 +36,7 @@ jobs:
               - *npm
               - '**/*.json'
               - '.eslintignore'
-              - '.eslintrc'
+              - '.eslintrc.js'
 
       - name: Set up Node
         if: ${{ toJSON( steps.paths.outputs.changes ) != '"[]"' }}
@@ -51,7 +51,7 @@ jobs:
 
       - name: Lint code and save linting report JSON
         if: ${{ steps.paths.outputs.eslint == 'true' }}
-        run: npm run lint:js -- --output-file eslint_report.json --format json
+        run: npm run lint -- --output-file eslint_report.json --format json
         # Continue to the next step even if this fails, so we can report on it.
         continue-on-error: true
 

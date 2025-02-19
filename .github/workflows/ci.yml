@@ -11,6 +11,16 @@ on:
       - opened
       - ready_for_review
       - synchronize
+    # Only run on a given PR if relevant files have changed.
+    paths:
+      - '.eslintignore'
+      - '.eslintrc.js'
+      - '.npmrc'
+      - '**.js'
+      - '**.json'
+      - '**.jsx'
+      - 'babel.config.js'
+      - 'webpack.config.js'
 
 defaults:
   run:

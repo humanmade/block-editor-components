@@ -11,6 +11,16 @@ on:
       - opened
       - ready_for_review
       - synchronize
+    # Only run on a given PR if relevant files have changed.
+    paths:
+      - '.eslintignore'
+      - '.eslintrc.js'
+      - '.npmrc'
+      - '**.js'
+      - '**.json'
+      - '**.jsx'
+      - 'babel.config.js'
+      - 'webpack.config.js'
 
 defaults:
   run:
@@ -22,62 +32,5 @@ concurrency:
 
 jobs:
   node:
-    name: Node
-    runs-on: ubuntu-22.04
-
-    strategy:
-      matrix:
-        node-version: [ 16 ]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Paths filters
-        uses: dorny/paths-filter@v2
-        id: paths
-        with:
-          filters: |
-            workflows: &workflows
-              - '.github/actions/**/*.yml'
-              - '.github/workflows/**/*.yml'
-            npm: &npm
-              - *workflows
-              - 'package.json'
-              - 'package-lock.json'
-            javascript: &javascript
-              - *workflows
-              - '**/*.js'
-            eslint:
-              - *workflows
-              - *javascript
-              - *npm
-              - '**/*.json'
-              - '.eslintignore'
-              - '.eslintrc'
-
-      - name: Setup
-        if: ${{ toJSON( steps.paths.outputs.changes ) != '"[]"' }}
-        uses: ./.github/actions/setup-node
-        with:
-          cache_version: ${{ secrets.GH_ACTIONS_CACHE_KEY }}
-
-      - name: Install dependencies
-        if: ${{ toJSON( steps.paths.outputs.changes ) != '"[]"' && steps.cache-node-dependencies.outputs.cache-hit != 'true' }}
-        run: npm ci --no-progress --no-fund --no-audit --loglevel error
-
-      - name: Lint code
-        if: ${{ steps.paths.outputs.eslint == 'true' }}
-        uses: wearerequired/lint-action@v2
-        with:
-          continue_on_error: false
-          eslint: true
-          eslint_extensions: js,json
-
-      - name: Run tests
-        if: ${{ steps.paths.outputs.javascript == 'true' || steps.paths.outputs.npm == 'true' }}
-        run: npm test
-
-      - name: Build application
-        if: ${{ steps.paths.outputs.javascript == 'true' || steps.paths.outputs.npm == 'true' }}
-        run: npm run build
+    uses: ./.github/workflows/node.yml
+    secrets: inherit

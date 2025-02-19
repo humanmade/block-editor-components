@@ -6,6 +6,7 @@ export { default as DateTimeControl } from './components/DateTimeControl';
 export { default as ImageControl } from './components/ImageControl';
 export { default as InnerBlockSlider } from './components/InnerBlockSlider';
 export { default as InnerBlocksDisplaySingle } from './components/InnerBlockSlider/inner-block-single-display';
+export { default as LinkControl } from './components/LinkControl';
 export { default as LinkToolbar } from './components/LinkToolbar';
 export { default as PlainTextWithLimit } from './components/PlainTextWithLimit';
 export { default as PostTitleControl } from './components/PostTitleControl';

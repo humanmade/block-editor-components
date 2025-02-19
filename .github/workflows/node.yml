@@ -1,0 +1,71 @@
+name: Node
+
+on: workflow_call
+
+jobs:
+  node:
+    name: Node
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 20 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Paths filters
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: paths
+        with:
+          filters: |
+            workflows: &workflows
+              - '.github/actions/**/*.yml'
+              - '.github/workflows/**/*.yml'
+            npm: &npm
+              - *workflows
+              - 'package.json'
+              - 'package-lock.json'
+            javascript: &javascript
+              - *workflows
+              - '**/*.js'
+            eslint:
+              - *workflows
+              - *javascript
+              - *npm
+              - '**/*.json'
+              - '.eslintignore'
+              - '.eslintrc.js'
+
+      - name: Set up Node
+        if: ${{ toJSON( steps.paths.outputs.changes ) != '"[]"' }}
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: ${{ toJSON( steps.paths.outputs.changes ) != '"[]"' && steps.cache-node-dependencies.outputs.cache-hit != 'true' }}
+        run: npm ci --progress=false --audit=false --fund=false
+
+      - name: Lint code and save linting report JSON
+        if: ${{ steps.paths.outputs.eslint == 'true' }}
+        run: npm run lint -- --output-file eslint_report.json --format json
+        # Continue to the next step even if this fails, so we can report on it.
+        continue-on-error: true
+
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@d57a1193d4c59cbfbf3f86c271f42612f9dbd9e9 # v3.0.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          report-json: 'eslint_report.json'
+          only-pr-files: true
+
+      - name: Run tests
+        if: ${{ steps.paths.outputs.javascript == 'true' || steps.paths.outputs.npm == 'true' }}
+        run: npm test
+
+      - name: Build application
+        if: ${{ steps.paths.outputs.javascript == 'true' || steps.paths.outputs.npm == 'true' }}
+        run: npm run build

@@ -1,6 +1,6 @@
 {
 	"name": "@humanmade/block-editor-components",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"description": "Reusable components, hooks and helper functions for the WordPress block editor(s).",
 	"keywords": [
 		"block editor",

@@ -6,8 +6,6 @@ The link control is just a wrapper for the core URL input component. The only di
 
 ## Usage
 
-For a minimum working setup, all you need to do is use the `PostTitleControl` component.
-
 ```js
 const { InspectorControls } = wp.blocks;
 const { LinkControl } = hm.controls;

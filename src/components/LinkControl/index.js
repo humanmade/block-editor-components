@@ -47,7 +47,7 @@ function LinkControl( {
 		return () => {
 			document.head.removeChild( style );
 		};
-	}, [] );
+	}, [ className ] );
 
 	return (
 		<BaseControl

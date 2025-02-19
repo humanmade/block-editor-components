@@ -16,7 +16,7 @@ export {
 	PostPickerButton,
 	PostPickerToolbarButton,
 	PostPickerModal,
-} from './components/PostPicker'
+} from './components/PostPicker';
 
 export { default as useActiveBlockStyle } from './hooks/useActiveBlockStyle';
 export { default as useBlockStyles } from './hooks/useBlockStyles';

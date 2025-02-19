@@ -171,7 +171,9 @@ function TermSearchControl( { label, taxonomy, termIds, onChange } ) {
 				label ||
 				sprintf(
 					__( 'Filter by %s', 'block-editor-components' ),
-					taxObject ? taxObject?.labels?.singular_name : ''
+					taxObject
+						? taxObject?.labels?.singular_name
+						: __( 'term', 'block-editor-components' )
 				)
 			}
 			suggestions={ suggestions }

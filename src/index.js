@@ -12,6 +12,7 @@ export { default as PlainTextWithLimit } from './components/PlainTextWithLimit';
 export { default as PostTitleControl } from './components/PostTitleControl';
 export { default as PostTypeCheck } from './components/PostTypeCheck';
 export { default as RichTextWithLimit } from './components/RichTextWithLimit';
+export { default as TermSearchControl } from './components/TermSearchControl';
 export { default as TermSelector } from './components/TermSelector';
 export {
 	PostPickerButton,

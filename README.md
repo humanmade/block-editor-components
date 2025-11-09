@@ -61,6 +61,7 @@ One way to ensure all dependencies are loaded is to use the [`@wordpress/depende
 - [`useActiveBlockStyle`](src/hooks/useActiveBlockStyle)
 - [`useBlockStyles`](src/hooks/useBlockStyles)
 - [`useDisallowedBlocks`](src/hooks/useDisallowedBlocks)
+- [`useMediaSrc`](src/hooks/useMediaSrc)
 - [`useMeta`](src/hooks/useMeta)
 - [`useRenderAppenderWithBlockLimit`](src/hooks/useRenderAppenderWithBlockLimit)
 - [`useSelectBlock`](src/hooks/useSelectBlock)

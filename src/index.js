@@ -23,6 +23,7 @@ export {
 export { default as useActiveBlockStyle } from './hooks/useActiveBlockStyle';
 export { default as useBlockStyles } from './hooks/useBlockStyles';
 export { default as useDisallowedBlocks } from './hooks/useDisallowedBlocks';
+export { default as useMediaSrc } from './hooks/useMediaSrc';
 export { default as useMeta } from './hooks/useMeta';
 export { default as usePostThumbnail } from './hooks/usePostThumbnail';
 export { default as useRenderAppenderWithBlockLimit } from './hooks/useRenderAppenderWithBlockLimit';

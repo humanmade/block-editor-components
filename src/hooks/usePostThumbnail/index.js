@@ -36,7 +36,7 @@ export default function usePostThumbnail() {
 
 	const setPostThumbnail = useCallback(
 		( mediaId ) => {
-		// If the image has been removed, we can remove the post thumbnail.
+			// If the image has been removed, we can remove the post thumbnail.
 			editPost( { featured_media: mediaId } );
 		},
 		[ editPost ]

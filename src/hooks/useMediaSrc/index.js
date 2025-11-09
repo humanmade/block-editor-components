@@ -1,4 +1,4 @@
-import { useSelect } from "@wordpress/data";
+import { useSelect } from '@wordpress/data';
 
 /**
  * Returns the original source URL of media if available, or undefined, given an ID.

@@ -14,6 +14,7 @@ export { default as PostTypeCheck } from './components/PostTypeCheck';
 export { default as RichTextWithLimit } from './components/RichTextWithLimit';
 export { default as TermSearchControl } from './components/TermSearchControl';
 export { default as TermSelector } from './components/TermSelector';
+export { default as VideoControl } from './components/VideoControl';
 export {
 	PostPickerButton,
 	PostPickerToolbarButton,

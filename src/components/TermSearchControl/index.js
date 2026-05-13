@@ -52,10 +52,11 @@ const getTermIdByTermValue = ( terms, termValue ) => {
  * @param {object}   props.taxonomy The taxonomy object.
  * @param {number[]} props.termIds  An array with the block's term ids for the given taxonomy.
  * @param {Function} props.onChange Callback `onChange` function.
+ * @param {number}   props.perPage  A number to use for the search terms per page.
  *
  * @returns {Element} The rendered component.
  */
-function TermSearchControl( { label, taxonomy, termIds, onChange } ) {
+function TermSearchControl( { label, taxonomy, termIds, onChange, perPage = 20 } ) {
 	const [ search, setSearch ] = useState( '' );
 	const [ value, setValue ] = useState( EMPTY_ARRAY );
 	const [ suggestions, setSuggestions ] = useState( EMPTY_ARRAY );
@@ -83,7 +84,7 @@ function TermSearchControl( { label, taxonomy, termIds, onChange } ) {
 					search,
 					orderby: 'name',
 					exclude: termIds,
-					per_page: 20,
+					per_page: perPage,
 				},
 			];
 			return {

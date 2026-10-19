@@ -14,6 +14,7 @@ import {
 	SelectControl,
 	Spinner,
 } from '@wordpress/components';
+import { useViewportMatch } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -169,7 +170,7 @@ function PostList( props ) {
 									key={ post.id }
 									style={ {
 										display: 'grid',
-										gridTemplateColumns: '1fr auto',
+										gridTemplateColumns: 'minmax( 0, 1fr ) auto',
 										marginRight: -2,
 										paddingRight: 2,
 									} }
@@ -217,7 +218,9 @@ function PostList( props ) {
 					style={ {
 						width: '100%',
 						marginTop: 24,
+						rowGap: 8,
 					} }
+					wrap
 				>
 					{ /*
 						  Count left, controls right, as wp-admin's own .tablenav does.
@@ -323,6 +326,10 @@ function BrowsePanel( props ) {
 
 	const postTypes = toPostTypes( postType );
 
+	// Below WordPress's own 782px admin breakpoint the two columns are too
+	// narrow to be useful, so filters stack above the list instead.
+	const isStacked = useViewportMatch( 'medium', '<' );
+
 	const [ search, setSearch ] = useState( '' );
 	const [ page, setPage ] = useState( 1 );
 	const [ selectedPostType, setSelectedPostType ] = useState( postTypes[ 0 ] );
@@ -414,11 +421,18 @@ function BrowsePanel( props ) {
 	return (
 		<Flex
 			align="flex-start"
-			style={ { gap: 24 } }
+			direction={ isStacked ? 'column' : 'row' }
+			style={ {
+				gap: 24,
+				width: '100%',
+			} }
 		>
 			<FlexItem
 				style={ {
-					width: '35%',
+					// minWidth lets the column shrink below its content width
+					// rather than overflowing the modal.
+					width: isStacked ? '100%' : '35%',
+					minWidth: 0,
 				} }
 			>
 				{ /*
@@ -468,7 +482,12 @@ function BrowsePanel( props ) {
 					} ) }
 				</div>
 			</FlexItem>
-			<FlexItem style={ { width: '65%' } }>
+			<FlexItem
+				style={ {
+					width: isStacked ? '100%' : '65%',
+					minWidth: 0,
+				} }
+			>
 				<PostList
 					page={ page }
 					postType={ selectedPostType }

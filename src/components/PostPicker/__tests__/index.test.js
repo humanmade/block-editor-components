@@ -70,6 +70,12 @@ jest.mock( '@wordpress/components', () => {
 	};
 }, { virtual: true } );
 
+const mockUseViewportMatch = jest.fn( () => false );
+
+jest.mock( '@wordpress/compose', () => ( {
+	useViewportMatch: ( ...args ) => mockUseViewportMatch( ...args ),
+} ) );
+
 jest.mock( '../../TermSelector', () => ( {
 	__esModule: true,
 	default: ( { taxonomy, value, onChange } ) => (
@@ -202,6 +208,8 @@ function lastQuery() {
 beforeEach( () => {
 	global.__select = buildSelect();
 	getEntityRecords.mockClear();
+	mockUseViewportMatch.mockClear();
+	mockUseViewportMatch.mockReturnValue( false );
 } );
 
 describe( 'PostPicker postType prop', () => {
@@ -335,6 +343,25 @@ describe( 'PostPicker taxonomy filters', () => {
 
 		fireEvent.click( screen.getByText( 'filter-category' ) );
 		expect( lastQuery()[ 2 ].page ).toBe( 1 );
+	} );
+} );
+
+describe( 'PostPicker narrow viewports', () => {
+	it( 'stacks below the admin breakpoint without changing what is rendered', () => {
+		mockUseViewportMatch.mockReturnValue( true );
+
+		renderModal( {
+			postType: [ 'post', 'page' ],
+			taxonomies: [ 'category' ],
+		} );
+
+		// Layout only: the same controls, the same query, at either width.
+		expect( mockUseViewportMatch ).toHaveBeenCalledWith( 'medium', '<' );
+		expect( screen.getByLabelText( 'Post type' ) ).toBeTruthy();
+		expect( screen.getByLabelText( 'Search Posts' ) ).toBeTruthy();
+		expect( screen.getByTestId( 'term-selector-category' ) ).toBeTruthy();
+		expect( screen.getByText( 'Post one' ) ).toBeTruthy();
+		expect( getEntityRecords ).toHaveBeenCalledWith( 'postType', 'post', expect.any( Object ) );
 	} );
 } );
 

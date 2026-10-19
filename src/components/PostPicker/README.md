@@ -68,6 +68,10 @@ for that type are offered, and a filter that no longer applies is cleared rather
 than left active but hidden. Changing the post type, the search term or a
 taxonomy filter resets the browse list to page one.
 
+Below 782px — WordPress's own admin breakpoint — the browse panel stacks, with
+the filters above the list rather than beside it. Two columns are unusable at
+phone widths.
+
 The *Current Selection* tab does fetch every post type, because `values` can
 span types and an exact `include` query has no pagination ambiguity. The
 selection is shown in `values` order.

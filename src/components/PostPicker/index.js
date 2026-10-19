@@ -149,6 +149,10 @@ function PostList( props ) {
 				// Offset to display checkbox focus outline.
 				paddingLeft: 4,
 				marginLeft: -4,
+				// Space between rows, not after the last one.
+				display: 'flex',
+				flexDirection: 'column',
+				gap: 4,
 			} }>
 				{
 					( isResolving && <Spinner /> )
@@ -275,9 +279,9 @@ function PostTypeSelector( props ) {
 
 	return (
 		<SelectControl
+			__nextHasNoMarginBottom
 			label={ __( 'Post type', 'block-editor-components' ) }
 			options={ options }
-			style={ { marginBottom: 24 } }
 			value={ value }
 			onChange={ onChange }
 		/>
@@ -398,34 +402,52 @@ function BrowsePanel( props ) {
 					width: '35%',
 				} }
 			>
+				{ /*
+				  The post type selector is scope, not a filter: it decides which
+				  collection is queried and therefore which taxonomy filters exist
+				  at all. It stays above the filters, and divided from them, so it
+				  reads as governing them. Please don't tidy it into the stack.
+				*/ }
 				{ postTypes.length > 1 && (
-					<PostTypeSelector
-						postTypes={ postTypes }
-						value={ selectedPostType }
-						onChange={ updateSelectedPostType }
-					/>
-				) }
-				<SearchControl
-					label={ __( 'Search Posts', 'block-editor-components' ) }
-					style={ { marginBottom: 24 } }
-					value={ search }
-					onChange={ ( text ) => {
-						setSearch( text );
-						setPage( 1 );
-					} }
-				/>
-				{ applicableTaxonomies.map( taxonomy => {
-					const taxObject = taxObjects.find( t => t && t.slug === taxonomy );
-
-					return (
-						<TermSelector
-							key={ taxonomy }
-							taxonomy={ taxonomy }
-							value={ taxQueries[ taxObject.rest_base ] ?? [] }
-							onChange={ terms => updateTaxQueryState( taxonomy, terms ) }
+					<div style={ {
+						marginBottom: 24,
+						paddingBottom: 24,
+						borderBottom: '1px solid #ddd',
+					} }>
+						<PostTypeSelector
+							postTypes={ postTypes }
+							value={ selectedPostType }
+							onChange={ updateSelectedPostType }
 						/>
-					);
-				} ) }
+					</div>
+				) }
+				<div style={ {
+					display: 'flex',
+					flexDirection: 'column',
+					gap: 24,
+				} }>
+					<SearchControl
+						__nextHasNoMarginBottom
+						label={ __( 'Search Posts', 'block-editor-components' ) }
+						value={ search }
+						onChange={ ( text ) => {
+							setSearch( text );
+							setPage( 1 );
+						} }
+					/>
+					{ applicableTaxonomies.map( taxonomy => {
+						const taxObject = taxObjects.find( t => t && t.slug === taxonomy );
+
+						return (
+							<TermSelector
+								key={ taxonomy }
+								taxonomy={ taxonomy }
+								value={ taxQueries[ taxObject.rest_base ] ?? [] }
+								onChange={ terms => updateTaxQueryState( taxonomy, terms ) }
+							/>
+						);
+					} ) }
+				</div>
 			</FlexItem>
 			<FlexItem style={ { width: '65%' } }>
 				<PostList

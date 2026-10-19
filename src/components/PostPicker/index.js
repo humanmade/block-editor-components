@@ -213,22 +213,23 @@ function PostList( props ) {
 			{ setPage && ! isResolving && totalPages > 1 && (
 				<Flex
 					align="center"
-					justify="flex-start"
+					justify="space-between"
 					style={ {
-						gap: 8,
+						width: '100%',
 						marginTop: 24,
 					} }
 				>
-					<FlexItem>
-						<Button
-							disabled={ page <= 1 }
-							variant="secondary"
-							onClick={ () => setPage( page - 1 ) }
-						>
-							{ __( 'Previous', 'block-editor-components' ) }
-						</Button>
-					</FlexItem>
-					<FlexItem>
+					{ /*
+						  Count left, controls right, as wp-admin's own .tablenav does.
+						  Spreading all three would float the count in the middle, where
+						  it shifts sideways whenever the page or total changes width.
+						*/ }
+					<FlexItem
+						style={ {
+							// $font-size-x-small in @wordpress/base-styles.
+							fontSize: 11,
+						} }
+					>
 						{ sprintf(
 							/* translators: 1: current page number. 2: total number of pages. 3: total number of posts. */
 							__( 'Page %1$d of %2$d (%3$d posts)', 'block-editor-components' ),
@@ -237,15 +238,33 @@ function PostList( props ) {
 							totalItems
 						) }
 					</FlexItem>
-					<FlexItem>
-						<Button
-							disabled={ page >= totalPages }
-							variant="secondary"
-							onClick={ () => setPage( page + 1 ) }
-						>
-							{ __( 'Next', 'block-editor-components' ) }
-						</Button>
-					</FlexItem>
+					<Flex
+						align="center"
+						justify="flex-end"
+						style={ {
+							gap: 8,
+							width: 'auto',
+						} }
+					>
+						<FlexItem>
+							<Button
+								disabled={ page <= 1 }
+								variant="secondary"
+								onClick={ () => setPage( page - 1 ) }
+							>
+								{ __( 'Previous', 'block-editor-components' ) }
+							</Button>
+						</FlexItem>
+						<FlexItem>
+							<Button
+								disabled={ page >= totalPages }
+								variant="secondary"
+								onClick={ () => setPage( page + 1 ) }
+							>
+								{ __( 'Next', 'block-editor-components' ) }
+							</Button>
+						</FlexItem>
+					</Flex>
 				</Flex>
 			) }
 		</>

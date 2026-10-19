@@ -519,13 +519,22 @@ export function PostPickerModal( props ) {
 
 	const postTypes = toPostTypes( postType );
 
+	// Canonical, display-order-independent key for the selected IDs. Reordering
+	// must not look like a new query — the order is applied client-side via
+	// sortOrder — but adding or removing a post genuinely is one.
+	const selectionIdsKey = [ ...values ].sort( ( a, b ) => a - b ).join( ',' );
+
 	// `per_page` has a REST minimum of 1, and an empty `include` would return
 	// everything, so an empty selection is not worth a request at all.
-	const selectionQueryArgs = useMemo( () => ( values.length > 0 ? {
-		include: values,
-		per_page: values.length,
-		context: 'view',
-	} : null ), [ values ] );
+	const selectionQueryArgs = useMemo( () => {
+		const ids = selectionIdsKey ? selectionIdsKey.split( ',' ).map( Number ) : [];
+
+		return ids.length > 0 ? {
+			include: ids,
+			per_page: ids.length,
+			context: 'view',
+		} : null;
+	}, [ selectionIdsKey ] );
 
 	return (
 		<Modal

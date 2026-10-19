@@ -374,8 +374,8 @@ describe( 'PostPicker current selection', () => {
 
 		fireEvent.click( screen.getByText( 'Current Selection' ) );
 
-		expect( getEntityRecords ).toHaveBeenCalledWith( 'postType', 'post', expect.objectContaining( { include: [ 10, 2, 1 ] } ) );
-		expect( getEntityRecords ).toHaveBeenCalledWith( 'postType', 'page', expect.objectContaining( { include: [ 10, 2, 1 ] } ) );
+		expect( getEntityRecords ).toHaveBeenCalledWith( 'postType', 'post', expect.objectContaining( { include: [ 1, 2, 10 ] } ) );
+		expect( getEntityRecords ).toHaveBeenCalledWith( 'postType', 'page', expect.objectContaining( { include: [ 1, 2, 10 ] } ) );
 
 		const labels = screen.getAllByRole( 'checkbox' ).map( input => input.parentNode.textContent );
 
@@ -395,6 +395,48 @@ describe( 'PostPicker current selection', () => {
 
 		expect( screen.getByTestId( 'spinner' ) ).toBeTruthy();
 		expect( screen.queryByText( 'Post one' ) ).toBeNull();
+	} );
+
+	it( 'does not refetch when the selection is only reordered', () => {
+		const { rerender } = render(
+			<PostPickerModal
+				postType={ [ 'post', 'page' ] }
+				setModalOpen={ () => {} }
+				title="Select posts"
+				values={ [ 10, 2, 1 ] }
+				onChange={ () => {} }
+			/>
+		);
+
+		fireEvent.click( screen.getByText( 'Current Selection' ) );
+
+		const renderedOrder = () => screen.getAllByRole( 'checkbox' ).map( input => input.parentNode.textContent );
+		// Selection queries only — the browse tab rendered once before the switch.
+		const distinctQueries = () => [ ...new Set(
+			getEntityRecords.mock.calls
+				.filter( call => call[ 2 ]?.include )
+				.map( call => JSON.stringify( call[ 2 ] ) )
+		) ];
+
+		const before = distinctQueries();
+
+		expect( before ).toHaveLength( 1 );
+		expect( renderedOrder() ).toEqual( [ 'Page ten', 'Post two', 'Post one' ] );
+
+		// Same IDs, new display order.
+		rerender(
+			<PostPickerModal
+				postType={ [ 'post', 'page' ] }
+				setModalOpen={ () => {} }
+				title="Select posts"
+				values={ [ 1, 10, 2 ] }
+				onChange={ () => {} }
+			/>
+		);
+
+		// `include` is canonical, so the order change is free — still one query.
+		expect( distinctQueries() ).toEqual( before );
+		expect( renderedOrder() ).toEqual( [ 'Post one', 'Page ten', 'Post two' ] );
 	} );
 
 	it( 'issues no request and explains itself when nothing is selected', () => {

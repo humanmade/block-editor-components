@@ -47,6 +47,7 @@ function PostList( props ) {
 		postType,
 		queryArgs,
 		onChange,
+		emptyMessage = __( 'No results found', 'block-editor-components' ),
 		page = 1,
 		setPage = null,
 		sortOrder = null,
@@ -59,7 +60,14 @@ function PostList( props ) {
 	// Stable dependency for the list of post types.
 	const postTypesKey = postTypes.join( ',' );
 
+	// Null query args mean there is nothing worth asking for, so skip the request.
+	const skipQuery = ! queryArgs;
+
 	const queriedPosts = useSelect( ( select ) => {
+		if ( skipQuery ) {
+			return [];
+		}
+
 		const posts = postTypes.reduce( ( accumulator, type ) => ( [
 			...accumulator,
 			...( select( 'core' ).getEntityRecords( 'postType', type, queryArgs ) ?? [] ),
@@ -71,19 +79,23 @@ function PostList( props ) {
 		}
 
 		return [ ...posts ].sort( ( a, b ) => sortOrder.indexOf( a.id ) - sortOrder.indexOf( b.id ) );
-	}, [ postTypesKey, queryArgs, sortOrder ] );
+	}, [ postTypesKey, queryArgs, skipQuery, sortOrder ] );
 
 	// Resolving while *any* request is in flight, so the list is not revealed piecemeal.
 	const isResolving = useSelect( ( select ) => {
+		if ( skipQuery ) {
+			return false;
+		}
+
 		return postTypes.some( type => select( 'core/data' ).isResolving(
 			'core',
 			'getEntityRecords',
 			[ 'postType', type, queryArgs ]
 		) );
-	}, [ postTypesKey, queryArgs ] );
+	}, [ postTypesKey, queryArgs, skipQuery ] );
 
 	const { totalItems, totalPages } = useSelect( ( select ) => {
-		if ( ! setPage ) {
+		if ( ! setPage || skipQuery ) {
 			return {
 				totalItems: 0,
 				totalPages: 0,
@@ -94,7 +106,7 @@ function PostList( props ) {
 			totalItems: select( 'core' ).getEntityRecordsTotalItems( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
 			totalPages: select( 'core' ).getEntityRecordsTotalPages( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
 		};
-	}, [ postTypesKey, queryArgs, setPage ] );
+	}, [ postTypesKey, queryArgs, setPage, skipQuery ] );
 
 	const reorderUp = ( postId ) => {
 		const index = values.indexOf( postId );
@@ -144,7 +156,7 @@ function PostList( props ) {
 							<Notice
 								isDismissible={ false }
 							>
-								{ __( 'No results found', 'block-editor-components' ) }
+								{ emptyMessage }
 							</Notice>
 						)
 						|| (
@@ -447,11 +459,13 @@ export function PostPickerModal( props ) {
 
 	const postTypes = toPostTypes( postType );
 
-	const selectionQueryArgs = useMemo( () => ( {
+	// `per_page` has a REST minimum of 1, and an empty `include` would return
+	// everything, so an empty selection is not worth a request at all.
+	const selectionQueryArgs = useMemo( () => ( values.length > 0 ? {
 		include: values,
 		per_page: values.length,
 		context: 'view',
-	} ), [ values ] );
+	} : null ), [ values ] );
 
 	return (
 		<Modal
@@ -493,6 +507,7 @@ export function PostPickerModal( props ) {
 
 							{ tabPanel.name === 'selection' && (
 								<PostList
+									emptyMessage={ __( 'No posts selected yet. Use the Browse tab to add some.', 'block-editor-components' ) }
 									isSortable
 									postType={ postTypes }
 									queryArgs={ selectionQueryArgs }

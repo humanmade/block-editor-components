@@ -370,6 +370,21 @@ describe( 'PostPicker current selection', () => {
 		expect( screen.queryByText( 'Post one' ) ).toBeNull();
 	} );
 
+	it( 'issues no request and explains itself when nothing is selected', () => {
+		renderModal( {
+			postType: [ 'post', 'page' ],
+			values: [],
+		} );
+
+		getEntityRecords.mockClear();
+		fireEvent.click( screen.getByText( 'Current Selection' ) );
+
+		// `per_page: 0` is below the REST minimum, so make no request at all.
+		expect( getEntityRecords ).not.toHaveBeenCalled();
+		expect( screen.getByText( 'No posts selected yet. Use the Browse tab to add some.' ) ).toBeTruthy();
+		expect( screen.queryByText( 'No results found' ) ).toBeNull();
+	} );
+
 	it( 'does not leak the dead "Foo" browse tab content', () => {
 		renderModal( { postType: 'post' } );
 

@@ -51,15 +51,41 @@ The title, used by button and modal title.
 
 #### `postType`
 
-Post type to select from.
+Post type(s) to select from. Either a single post type slug, or an array of slugs.
 
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|
-| `String`                             | no                                   | `post`
+| `String\|Array`                      | no                                   | `post`
+
+When passed an array of more than one post type, the *Browse Posts* tab gains a
+post type selector at the top of the filter sidebar. It is deliberately single
+choice: a REST collection request cannot span post types, so the browse list
+queries one type at a time and the results are never merged. The first type in
+the array is selected by default.
+
+The taxonomy filters follow the selected post type — only taxonomies registered
+for that type are offered, and a filter that no longer applies is cleared rather
+than left active but hidden. Changing the post type, the search term or a
+taxonomy filter resets the browse list to page one.
+
+The *Current Selection* tab does fetch every post type, because `values` can
+span types and an exact `include` query has no pagination ambiguity. The
+selection is shown in `values` order.
+
+```jsx
+<PostPickerButton
+	postType={ [ 'post', 'page' ] }
+	taxonomies={ [ 'category', 'post_tag' ] }
+	onChange={ newValue => setAttributes( { postIds: newValue } ) }
+	values={ attributes.postIds || [] }
+/>
+```
 
 #### `taxonomies`
 
 Taxonomies that results can be filtered by. Array of taxonomy slugs. e.g. `[ 'category', 'post_tag' ]`.
+
+Only those registered for the post type currently being browsed are shown.
 
 | Type                                 | Required                             | Default                              |
 |--------------------------------------|--------------------------------------|--------------------------------------|

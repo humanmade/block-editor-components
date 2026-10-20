@@ -19,12 +19,6 @@ import { useViewportMatch } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import {
-	chevronLeft,
-	chevronRight,
-	next,
-	previous,
-} from '@wordpress/icons';
 
 import TermSelector from '../TermSelector';
 
@@ -268,28 +262,39 @@ function PostList( props ) {
 					align="center"
 					justify="center"
 					style={ {
-						gap: 4,
 						width: '100%',
-						borderTop: '1px solid #ddd',
 						marginTop: 24,
-						paddingTop: 8,
+						// Core's own .block-editor-patterns__grid-pagination.
+						borderTop: '1px solid #2f2f2f',
+						padding: 4,
+						gap: 12,
 					} }
 				>
-					<FlexItem>
+					<FlexItem
+						style={ {
+							display: 'flex',
+							alignItems: 'center',
+							gap: 4,
+						} }
+					>
 						<Button
+							aria-label={ __( 'First page', 'block-editor-components' ) }
 							disabled={ page <= 1 }
-							icon={ previous }
-							label={ __( 'First page', 'block-editor-components' ) }
+							size="compact"
+							variant="tertiary"
 							onClick={ () => setPage( 1 ) }
-						/>
-					</FlexItem>
-					<FlexItem>
+						>
+							<span>&laquo;</span>
+						</Button>
 						<Button
+							aria-label={ __( 'Previous page', 'block-editor-components' ) }
 							disabled={ page <= 1 }
-							icon={ chevronLeft }
-							label={ __( 'Previous page', 'block-editor-components' ) }
+							size="compact"
+							variant="tertiary"
 							onClick={ () => setPage( page - 1 ) }
-						/>
+						>
+							<span>&lsaquo;</span>
+						</Button>
 					</FlexItem>
 					{ /*
 						  Not a control, but the only thing saying where you are, so
@@ -297,8 +302,11 @@ function PostList( props ) {
 						*/ }
 					<FlexItem
 						style={ {
+							// $gray-700, as core's muted Text resolves to. Plain
+							// elements rather than __experimentalText: an experimental
+							// import is a rename waiting to happen in a published package.
+							color: '#757575',
 							fontSize: 12,
-							padding: '0 8px',
 						} }
 					>
 						<span aria-live="polite">
@@ -310,21 +318,31 @@ function PostList( props ) {
 							) }
 						</span>
 					</FlexItem>
-					<FlexItem>
+					<FlexItem
+						style={ {
+							display: 'flex',
+							alignItems: 'center',
+							gap: 4,
+						} }
+					>
 						<Button
+							aria-label={ __( 'Next page', 'block-editor-components' ) }
 							disabled={ page >= totalPages }
-							icon={ chevronRight }
-							label={ __( 'Next page', 'block-editor-components' ) }
+							size="compact"
+							variant="tertiary"
 							onClick={ () => setPage( page + 1 ) }
-						/>
-					</FlexItem>
-					<FlexItem>
+						>
+							<span>&rsaquo;</span>
+						</Button>
 						<Button
+							aria-label={ __( 'Last page', 'block-editor-components' ) }
 							disabled={ page >= totalPages }
-							icon={ next }
-							label={ __( 'Last page', 'block-editor-components' ) }
+							size="compact"
+							variant="tertiary"
 							onClick={ () => setPage( totalPages ) }
-						/>
+						>
+							<span>&raquo;</span>
+						</Button>
 					</FlexItem>
 				</Flex>
 			) }

@@ -698,11 +698,23 @@ export function PostPickerModal( props ) {
 			{ /*
 				  The footer sits outside the TabPanel so that switching tabs
 				  neither remounts it nor moves focus out of it.
+
+				  Sticky, not a flex-pinned row, so that it mirrors core's own
+				  sticky modal header in the same scroll container rather than
+				  taking over the modal's scrolling. It also means the list
+				  ends above the footer instead of behind it: once scrolled to
+				  the bottom the footer returns to its place in the flow, so
+				  the last row is never covered.
 				*/ }
 			{ ( deferChanges || !! maxItems ) && (
 				<div style={ {
+					position: 'sticky',
+					bottom: 0,
+					zIndex: 1,
+					background: '#fff',
 					marginTop: 24,
 					paddingTop: 16,
+					paddingBottom: 16,
 					borderTop: '1px solid #ddd',
 				} }>
 					{ isOverLimit && (

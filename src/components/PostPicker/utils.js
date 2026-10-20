@@ -13,29 +13,37 @@ export function toPostTypes( postType ) {
 }
 
 /**
- * Build a checkbox label for a post.
+ * The parts of a post's checkbox label.
  *
- * When a selection spans post types the type is prefixed into the label
- * itself, so assistive technology reads it as part of the accessible name
- * rather than as a separate element.
+ * Returns the pieces rather than one assembled string so the caller can style
+ * the type prefix without this module reaching for React — the helpers here
+ * stay pure so they can be unit tested without a DOM.
+ *
+ * The colon lives inside the translated prefix because languages punctuate
+ * differently; only the space between prefix and title is fixed.
  *
  * @param {object} post Post record.
  * @param {?object} postTypeLabels Singular labels keyed by slug, or null for no prefix.
- * @returns {string} Label.
+ * @returns {{prefix: ?string, title: string}} Prefix, or null when the selection is one post type, and the title.
  */
-export function labelForPost( post, postTypeLabels ) {
+export function labelPartsForPost( post, postTypeLabels ) {
 	const title = post.title?.rendered || __( '(No title)', 'block-editor-components' );
 
 	if ( ! postTypeLabels ) {
-		return title;
+		return {
+			prefix: null,
+			title,
+		};
 	}
 
-	return sprintf(
-		/* translators: 1: post type singular label. 2: post title. */
-		__( '%1$s: %2$s', 'block-editor-components' ),
-		postTypeLabels[ post.type ] || post.type,
-		title
-	);
+	return {
+		prefix: sprintf(
+			/* translators: %s: post type singular label, prefixed to a post title. */
+			__( '%s:', 'block-editor-components' ),
+			postTypeLabels[ post.type ] || post.type
+		),
+		title,
+	};
 }
 
 /**

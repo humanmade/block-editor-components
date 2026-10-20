@@ -3,7 +3,7 @@ import {
 	getPostTypesKey,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
-	labelForPost,
+	labelPartsForPost,
 	toPostTypes,
 } from '../utils';
 
@@ -12,7 +12,9 @@ jest.mock( '@wordpress/i18n', () => ( {
 	sprintf: ( format, ...args ) => args.reduce(
 		( carry, arg, index ) => carry
 			.replace( `%${ index + 1 }$d`, arg )
-			.replace( `%${ index + 1 }$s`, arg ),
+			.replace( `%${ index + 1 }$s`, arg )
+			// Unnumbered specifiers, consumed in order.
+			.replace( /%[ds]/, arg ),
 		format
 	),
 } ) );
@@ -66,7 +68,7 @@ describe( 'getPostTypesKey', () => {
 	} );
 } );
 
-describe( 'labelForPost', () => {
+describe( 'labelPartsForPost', () => {
 
 	const post = {
 		id: 1,
@@ -75,15 +77,29 @@ describe( 'labelForPost', () => {
 	};
 
 	it( 'should omit the prefix for a single post type', () => {
-		expect( labelForPost( post, null ) ).toBe( 'Page ten' );
+		expect( labelPartsForPost( post, null ) ).toEqual( {
+			prefix: null,
+			title: 'Page ten',
+		} );
 	} );
 
-	it( 'should prefix the singular label when the selection spans types', () => {
-		expect( labelForPost( post, { page: 'Page' } ) ).toBe( 'Page: Page ten' );
+	it( 'should return the prefix separately so the caller can style it', () => {
+		expect( labelPartsForPost( post, { page: 'Page' } ) ).toEqual( {
+			prefix: 'Page:',
+			title: 'Page ten',
+		} );
+	} );
+
+	it( 'should keep the colon with the prefix, not the title', () => {
+		// Languages punctuate differently, so it belongs in the translated part.
+		const { prefix, title } = labelPartsForPost( post, { page: 'Page' } );
+
+		expect( prefix.endsWith( ':' ) ).toBe( true );
+		expect( title.startsWith( ':' ) ).toBe( false );
 	} );
 
 	it( 'should fall back to the slug while the post type is unresolved', () => {
-		expect( labelForPost( post, {} ) ).toBe( 'page: Page ten' );
+		expect( labelPartsForPost( post, {} ).prefix ).toBe( 'page:' );
 	} );
 
 	it( 'should fall back to a placeholder for an empty title', () => {
@@ -93,15 +109,25 @@ describe( 'labelForPost', () => {
 			title: { rendered: '' },
 		};
 
-		expect( labelForPost( untitled, null ) ).toBe( '(No title)' );
-		expect( labelForPost( untitled, { page: 'Page' } ) ).toBe( 'Page: (No title)' );
+		expect( labelPartsForPost( untitled, null ).title ).toBe( '(No title)' );
+		expect( labelPartsForPost( untitled, { page: 'Page' } ) ).toEqual( {
+			prefix: 'Page:',
+			title: '(No title)',
+		} );
 	} );
 
 	it( 'should tolerate a post with no title object at all', () => {
-		expect( labelForPost( {
+		expect( labelPartsForPost( {
 			id: 3,
 			type: 'page',
-		}, null ) ).toBe( '(No title)' );
+		}, null ).title ).toBe( '(No title)' );
+	} );
+
+	it( 'should return strings, so the helper stays free of React', () => {
+		const parts = labelPartsForPost( post, { page: 'Page' } );
+
+		expect( typeof parts.prefix ).toBe( 'string' );
+		expect( typeof parts.title ).toBe( 'string' );
 	} );
 } );
 

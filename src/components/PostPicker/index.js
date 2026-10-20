@@ -26,9 +26,32 @@ import {
 	getPostTypesKey,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
-	labelForPost,
+	labelPartsForPost,
 	toPostTypes,
 } from './utils';
+
+/**
+ * A post's checkbox label, with the post type prefix emphasised.
+ *
+ * @param {object} post Post record.
+ * @param {?object} postTypeLabels Singular labels keyed by slug, or null for no prefix.
+ * @returns {ReactNode|string} Label.
+ */
+function labelForCheckbox( post, postTypeLabels ) {
+	const { prefix, title } = labelPartsForPost( post, postTypeLabels );
+
+	if ( ! prefix ) {
+		return title;
+	}
+
+	return (
+		<>
+			<strong>{ prefix }</strong>
+			{ ' ' }
+			{ title }
+		</>
+	);
+}
 
 /**
  * Resolve post type slugs to their singular labels.
@@ -193,7 +216,15 @@ function PostList( props ) {
 								>
 									<CheckboxControl
 										checked={ values.includes( post.id ) }
-										label={ labelForPost( post, showPostTypeLabels ? postTypeLabels : null ) }
+										/*
+										  `label` is typed as a string, but the control passes it
+										  straight through as children of its <label>, so a node
+										  renders. Deliberate: flattening this back to a string to
+										  satisfy the type would silently lose the bold prefix.
+										  The <strong> adds no semantics, so the accessible name is
+										  still the one string "Post: Some title".
+										*/
+										label={ labelForCheckbox( post, showPostTypeLabels ? postTypeLabels : null ) }
 										onChange={ ( checked ) => {
 											if ( checked ) {
 												onChange( [ ...values, post.id ] );

@@ -32,6 +32,10 @@ import {
 	toPostTypes,
 } from './utils';
 
+// Space the sticky footer opens above itself. The pager cancels it when it is
+// the last thing before the footer, so the two rules read as one pair.
+const FOOTER_GAP = 24;
+
 /**
  * A post's checkbox label, with the post type prefix emphasised.
  *
@@ -88,6 +92,7 @@ function PostList( props ) {
 		queryArgs,
 		onChange,
 		emptyMessage = __( 'No results found', 'block-editor-components' ),
+		hasFooterBelow = false,
 		maxItems = null,
 		page = 1,
 		showPostTypeLabels = false,
@@ -264,6 +269,10 @@ function PostList( props ) {
 					style={ {
 						width: '100%',
 						marginTop: 24,
+						// Sit against the footer's rule rather than a gap's width
+						// from it. Without a footer the gap is not the footer's
+						// to close, so leave the spacing alone.
+						marginBottom: hasFooterBelow ? -FOOTER_GAP : 0,
 						// Structure and spacing follow core's
 						// .block-editor-patterns__grid-pagination, but not its
 						// #2f2f2f rule: every other rule in this modal is #ddd,
@@ -393,6 +402,7 @@ function PostTypeSelector( props ) {
 function BrowsePanel( props ) {
 	const {
 		postType,
+		hasFooterBelow = false,
 		maxItems = null,
 		onChange,
 		values,
@@ -556,6 +566,7 @@ function BrowsePanel( props ) {
 				} }
 			>
 				<PostList
+					hasFooterBelow={ hasFooterBelow }
 					maxItems={ maxItems }
 					page={ page }
 					postType={ selectedPostType }
@@ -668,6 +679,8 @@ export function PostPickerModal( props ) {
 
 	const isOverLimit = !! maxItems && selection.length > maxItems;
 
+	const hasFooter = deferChanges || !! maxItems;
+
 	const footerRef = useRef();
 
 	// The footer has to escape the padding of the modal's scroll container: the
@@ -755,6 +768,7 @@ export function PostPickerModal( props ) {
 						} }>
 							{ tabPanel.name === 'browse' && (
 								<BrowsePanel
+									hasFooterBelow={ hasFooter }
 									maxItems={ maxItems }
 									postType={ postType }
 									taxonomies={ taxonomies }
@@ -792,14 +806,14 @@ export function PostPickerModal( props ) {
 				  the bottom the footer returns to its place in the flow, so
 				  the last row is never covered.
 				*/ }
-			{ ( deferChanges || !! maxItems ) && (
+			{ hasFooter && (
 				<div
 					ref={ footerRef }
 					style={ {
 						position: 'sticky',
 						zIndex: 1,
 						background: '#fff',
-						marginTop: 24,
+						marginTop: FOOTER_GAP,
 						paddingTop: 16,
 						paddingBottom: 16,
 						borderTop: '1px solid #ddd',

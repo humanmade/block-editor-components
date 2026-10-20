@@ -21,43 +21,13 @@ import { __, sprintf } from '@wordpress/i18n';
 
 import TermSelector from '../TermSelector';
 
-/**
- * Normalise the postType prop to an array of post type slugs.
- *
- * The prop accepts either a single slug or an array of slugs.
- *
- * @param {string|string[]} postType Post type slug, or array of slugs.
- * @returns {string[]} Array of post type slugs.
- */
-function toPostTypes( postType ) {
-	return Array.isArray( postType ) ? postType : [ postType ];
-}
-
-/**
- * Build a checkbox label for a post.
- *
- * When a selection spans post types the type is prefixed into the label
- * itself, so assistive technology reads it as part of the accessible name
- * rather than as a separate element.
- *
- * @param {object} post Post record.
- * @param {?object} postTypeLabels Singular labels keyed by slug, or null for no prefix.
- * @returns {string} Label.
- */
-function labelForPost( post, postTypeLabels ) {
-	const title = post.title?.rendered || __( '(No title)', 'block-editor-components' );
-
-	if ( ! postTypeLabels ) {
-		return title;
-	}
-
-	return sprintf(
-		/* translators: 1: post type singular label. 2: post title. */
-		__( '%1$s: %2$s', 'block-editor-components' ),
-		postTypeLabels[ post.type ] || post.type,
-		title
-	);
-}
+import {
+	getApplicableTaxonomies,
+	getSelectionIdsKey,
+	getSelectionQueryArgs,
+	labelForPost,
+	toPostTypes,
+} from './utils';
 
 /**
  * Resolve post type slugs to their singular labels.
@@ -379,13 +349,7 @@ function BrowsePanel( props ) {
 		return taxonomies.map( taxonomy => select( 'core' ).getTaxonomy( taxonomy ) );
 	}, [ taxonomies ] );
 
-	// Taxonomies registered for the selected post type. Querying any other
-	// taxonomy against this post type is a 400 from the REST API.
-	const applicableTaxonomies = taxonomies.filter( taxonomy => {
-		const taxObject = taxObjects.find( t => t && t.slug === taxonomy );
-
-		return !! taxObject && ( taxObject.types ?? [] ).includes( selectedPostType );
-	} );
+	const applicableTaxonomies = getApplicableTaxonomies( taxonomies, taxObjects, selectedPostType );
 
 	// Guard against the postType prop changing out from under the selection.
 	useEffect( () => {
@@ -424,10 +388,8 @@ function BrowsePanel( props ) {
 	 * @param {string} newPostType Post type slug.
 	 */
 	const updateSelectedPostType = ( newPostType ) => {
-		const allowedRestBases = taxonomies
-			.map( taxonomy => taxObjects.find( t => t && t.slug === taxonomy ) )
-			.filter( taxObject => !! taxObject && ( taxObject.types ?? [] ).includes( newPostType ) )
-			.map( taxObject => taxObject.rest_base );
+		const allowedRestBases = getApplicableTaxonomies( taxonomies, taxObjects, newPostType )
+			.map( taxonomy => taxObjects.find( t => t && t.slug === taxonomy ).rest_base );
 
 		setTaxQueries( Object.fromEntries(
 			Object.entries( taxQueries ).filter( ( [ restBase ] ) => allowedRestBases.includes( restBase ) )
@@ -559,22 +521,12 @@ export function PostPickerModal( props ) {
 
 	const postTypes = toPostTypes( postType );
 
-	// Canonical, display-order-independent key for the selected IDs. Reordering
-	// must not look like a new query — the order is applied client-side via
-	// sortOrder — but adding or removing a post genuinely is one.
-	const selectionIdsKey = [ ...values ].sort( ( a, b ) => a - b ).join( ',' );
-
-	// `per_page` has a REST minimum of 1, and an empty `include` would return
-	// everything, so an empty selection is not worth a request at all.
-	const selectionQueryArgs = useMemo( () => {
-		const ids = selectionIdsKey ? selectionIdsKey.split( ',' ).map( Number ) : [];
-
-		return ids.length > 0 ? {
-			include: ids,
-			per_page: ids.length,
-			context: 'view',
-		} : null;
-	}, [ selectionIdsKey ] );
+	// Memoised on the canonical key so that a reorder is not seen as a new query.
+	const selectionIdsKey = getSelectionIdsKey( values );
+	const selectionQueryArgs = useMemo(
+		() => getSelectionQueryArgs( selectionIdsKey ),
+		[ selectionIdsKey ]
+	);
 
 	return (
 		<Modal

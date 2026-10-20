@@ -18,7 +18,7 @@ import {
 import { useViewportMatch } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	chevronLeft,
 	chevronRight,
@@ -143,16 +143,12 @@ function PostList( props ) {
 		) );
 	}, [ postTypesKey, queryArgs, skipQuery ] );
 
-	const { totalItems, totalPages } = useSelect( ( select ) => {
+	const { totalPages } = useSelect( ( select ) => {
 		if ( ! setPage || skipQuery ) {
-			return {
-				totalItems: 0,
-				totalPages: 0,
-			};
+			return { totalPages: 0 };
 		}
 
 		return {
-			totalItems: select( 'core' ).getEntityRecordsTotalItems( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
 			totalPages: select( 'core' ).getEntityRecordsTotalPages( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
 		};
 	}, [ postTypesKey, queryArgs, setPage, skipQuery ] );
@@ -268,82 +264,69 @@ function PostList( props ) {
 				}
 			</div>
 			{ setPage && ! isResolving && totalPages > 1 && (
-				<div style={ { marginTop: 24 } }>
-					<div style={ {
-						color: '#757575',
-						// $font-size-x-small in @wordpress/base-styles.
-						fontSize: 11,
-						marginBottom: 8,
-					} }>
-						{ sprintf(
-							/* translators: %d: total number of results. */
-							_n( '%d item', '%d items', totalItems, 'block-editor-components' ),
-							totalItems
-						) }
-					</div>
-					<Flex
-						align="center"
-						justify="center"
+				<Flex
+					align="center"
+					justify="center"
+					style={ {
+						gap: 4,
+						width: '100%',
+						borderTop: '1px solid #ddd',
+						marginTop: 24,
+						paddingTop: 8,
+					} }
+				>
+					<FlexItem>
+						<Button
+							disabled={ page <= 1 }
+							icon={ previous }
+							label={ __( 'First page', 'block-editor-components' ) }
+							onClick={ () => setPage( 1 ) }
+						/>
+					</FlexItem>
+					<FlexItem>
+						<Button
+							disabled={ page <= 1 }
+							icon={ chevronLeft }
+							label={ __( 'Previous page', 'block-editor-components' ) }
+							onClick={ () => setPage( page - 1 ) }
+						/>
+					</FlexItem>
+					{ /*
+						  Not a control, but the only thing saying where you are, so
+						  it is announced rather than left to the buttons either side.
+						*/ }
+					<FlexItem
 						style={ {
-							gap: 4,
-							width: '100%',
-							borderTop: '1px solid #ddd',
-							paddingTop: 8,
+							fontSize: 12,
+							padding: '0 8px',
 						} }
 					>
-						<FlexItem>
-							<Button
-								disabled={ page <= 1 }
-								icon={ previous }
-								label={ __( 'First page', 'block-editor-components' ) }
-								onClick={ () => setPage( 1 ) }
-							/>
-						</FlexItem>
-						<FlexItem>
-							<Button
-								disabled={ page <= 1 }
-								icon={ chevronLeft }
-								label={ __( 'Previous page', 'block-editor-components' ) }
-								onClick={ () => setPage( page - 1 ) }
-							/>
-						</FlexItem>
-						{ /*
-							  Not a control, but the only thing saying where you are, so
-							  it is announced rather than left to the buttons either side.
-							*/ }
-						<FlexItem
-							style={ {
-								fontSize: 12,
-								padding: '0 8px',
-							} }
-						>
-							<span aria-live="polite">
-								{ sprintf(
-									/* translators: 1: current page number. 2: total number of pages. */
-									__( '%1$d of %2$d', 'block-editor-components' ),
-									page,
-									totalPages
-								) }
-							</span>
-						</FlexItem>
-						<FlexItem>
-							<Button
-								disabled={ page >= totalPages }
-								icon={ chevronRight }
-								label={ __( 'Next page', 'block-editor-components' ) }
-								onClick={ () => setPage( page + 1 ) }
-							/>
-						</FlexItem>
-						<FlexItem>
-							<Button
-								disabled={ page >= totalPages }
-								icon={ next }
-								label={ __( 'Last page', 'block-editor-components' ) }
-								onClick={ () => setPage( totalPages ) }
-							/>
-						</FlexItem>
-					</Flex>
-				</div>
+						<span aria-live="polite">
+							{ sprintf(
+								/* translators: 1: current page number. 2: total number of pages. */
+								__( '%1$d of %2$d', 'block-editor-components' ),
+								page,
+								totalPages
+							) }
+						</span>
+					</FlexItem>
+					<FlexItem>
+						<Button
+							disabled={ page >= totalPages }
+							icon={ chevronRight }
+							label={ __( 'Next page', 'block-editor-components' ) }
+							onClick={ () => setPage( page + 1 ) }
+						/>
+					</FlexItem>
+					<FlexItem>
+						<Button
+							disabled={ page >= totalPages }
+							icon={ next }
+							label={ __( 'Last page', 'block-editor-components' ) }
+							onClick={ () => setPage( totalPages ) }
+						/>
+					</FlexItem>
+				</Flex>
 			) }
 		</>
 	);
@@ -798,13 +781,17 @@ export function PostPickerModal( props ) {
 						paddingTop: 16,
 						paddingBottom: 16,
 						borderTop: '1px solid #ddd',
-						// A sticky inset resolves against the scroll container's
-						// content box, so `bottom: 0` would stop short of the
-						// frame by that container's own bottom padding and let
-						// the list show through the gap. Overshoot by the same
-						// amount. The inset applies only while stuck, so the end
-						// of the list is unaffected.
+						// Two states to keep level with the frame, and each needs
+						// its own correction. Stuck: a sticky inset resolves
+						// against the scroll container's content box, so
+						// `bottom: 0` would stop short by that container's
+						// bottom padding and let the list show through. In flow:
+						// the inset does nothing, and the footer sits above the
+						// same padding, so pull the padding back with a negative
+						// margin. They do not compound — a bottom margin does not
+						// move the stuck position, only the flow one.
 						bottom: -scrollPadding.bottom,
+						marginBottom: -scrollPadding.bottom,
 						// Full bleed, so the rule runs the width of the modal as
 						// the header's does. The padding puts the contents back
 						// where the container's own padding had them.

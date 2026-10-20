@@ -13,6 +13,7 @@ import {
 	SearchControl,
 	SelectControl,
 	Spinner,
+	__experimentalConfirmDialog as ConfirmDialog,
 } from '@wordpress/components';
 import { useViewportMatch } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
@@ -24,6 +25,7 @@ import TermSelector from '../TermSelector';
 import {
 	getApplicableTaxonomies,
 	getPostTypesKey,
+	getSelectionAfterPick,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
 	labelPartsForPost,
@@ -86,6 +88,7 @@ function PostList( props ) {
 		queryArgs,
 		onChange,
 		emptyMessage = __( 'No results found', 'block-editor-components' ),
+		maxItems = null,
 		page = 1,
 		showPostTypeLabels = false,
 		setPage = null,
@@ -227,7 +230,7 @@ function PostList( props ) {
 										label={ labelForCheckbox( post, showPostTypeLabels ? postTypeLabels : null ) }
 										onChange={ ( checked ) => {
 											if ( checked ) {
-												onChange( [ ...values, post.id ] );
+												onChange( getSelectionAfterPick( values, post.id, maxItems ) );
 											} else {
 												onChange( values.filter( value => ( value !== post.id ) ) );
 											}
@@ -360,6 +363,7 @@ function PostTypeSelector( props ) {
 function BrowsePanel( props ) {
 	const {
 		postType,
+		maxItems = null,
 		onChange,
 		values,
 		taxonomies,
@@ -522,6 +526,7 @@ function BrowsePanel( props ) {
 				} }
 			>
 				<PostList
+					maxItems={ maxItems }
 					page={ page }
 					postType={ selectedPostType }
 					queryArgs={ queryArgs }
@@ -531,6 +536,30 @@ function BrowsePanel( props ) {
 				/>
 			</FlexItem>
 		</Flex>
+	);
+}
+
+/**
+ * Describe the size of a selection, and the limit it is working against.
+ *
+ * @param {number} count Number of selected posts.
+ * @param {?number} maxItems Maximum selectable, or null for no limit.
+ * @returns {string} Label.
+ */
+function selectionCountLabel( count, maxItems ) {
+	if ( ! maxItems ) {
+		return sprintf(
+			/* translators: %d: number of selected posts. */
+			__( '%d selected', 'block-editor-components' ),
+			count
+		);
+	}
+
+	return sprintf(
+		/* translators: 1: number of selected posts. 2: maximum selectable. */
+		__( '%1$d of %2$d selected', 'block-editor-components' ),
+		count,
+		maxItems
 	);
 }
 
@@ -546,14 +575,64 @@ export function PostPickerModal( props ) {
 		postType = 'post',
 		taxonomies = [],
 		values = [],
+		deferChanges = false,
+		maxItems = null,
 		onChange,
 		setModalOpen,
 	} = props;
 
 	const postTypes = toPostTypes( postType );
 
+	// The draft only exists in deferred mode; `values` stays the source of
+	// truth otherwise, so live consumers see exactly the behaviour they had.
+	const [ draft, setDraft ] = useState( values );
+	const [ isConfirmingDiscard, setIsConfirmingDiscard ] = useState( false );
+
+	const selection = deferChanges ? draft : values;
+
+	const updateSelection = useCallback( ( nextValues ) => {
+		if ( deferChanges ) {
+			setDraft( nextValues );
+
+			return;
+		}
+
+		// Live mode has nowhere to park an over-limit selection and no confirm
+		// step to block, so the only enforcement available is to refuse the add.
+		if ( maxItems > 1 && nextValues.length > maxItems ) {
+			return;
+		}
+
+		onChange( nextValues );
+	}, [ deferChanges, maxItems, onChange ] );
+
+	// Order is meaningful — a reorder is unsaved work too.
+	const isDirty = deferChanges && (
+		draft.length !== values.length || draft.some( ( id, index ) => id !== values[ index ] )
+	);
+
+	const isOverLimit = !! maxItems && selection.length > maxItems;
+
+	const closeModal = () => setModalOpen( false );
+
+	/**
+	 * Leave without committing, checking first if there is anything to lose.
+	 *
+	 * The modal's ✕ and the Escape key both arrive here via `onRequestClose`,
+	 * so every way out of the modal asks the same question.
+	 */
+	const requestDiscard = () => {
+		if ( isDirty ) {
+			setIsConfirmingDiscard( true );
+
+			return;
+		}
+
+		closeModal();
+	};
+
 	// Memoised on the canonical key so that a reorder is not seen as a new query.
-	const selectionIdsKey = getSelectionIdsKey( values );
+	const selectionIdsKey = getSelectionIdsKey( selection );
 	const selectionQueryArgs = useMemo(
 		() => getSelectionQueryArgs( selectionIdsKey ),
 		[ selectionIdsKey ]
@@ -566,7 +645,7 @@ export function PostPickerModal( props ) {
 				maxWidth: '100%',
 			} }
 			title={ title }
-			onRequestClose={ () => setModalOpen( false ) }
+			onRequestClose={ requestDiscard }
 		>
 			<div style={ { marginTop: -16 } }>
 				<TabPanel
@@ -590,10 +669,11 @@ export function PostPickerModal( props ) {
 						} }>
 							{ tabPanel.name === 'browse' && (
 								<BrowsePanel
+									maxItems={ maxItems }
 									postType={ postType }
 									taxonomies={ taxonomies }
-									values={ values }
-									onChange={ onChange }
+									values={ selection }
+									onChange={ updateSelection }
 								/>
 							) }
 
@@ -601,18 +681,107 @@ export function PostPickerModal( props ) {
 								<PostList
 									emptyMessage={ __( 'No posts selected yet. Use the Browse tab to add some.', 'block-editor-components' ) }
 									isSortable
+									maxItems={ maxItems }
 									postType={ postTypes }
 									queryArgs={ selectionQueryArgs }
 									showPostTypeLabels={ postTypes.length > 1 }
-									sortOrder={ values }
-									values={ values }
-									onChange={ onChange }
+									sortOrder={ selection }
+									values={ selection }
+									onChange={ updateSelection }
 								/>
 							) }
 						</div>
 					) }
 				</TabPanel>
 			</div>
+
+			{ /*
+				  The footer sits outside the TabPanel so that switching tabs
+				  neither remounts it nor moves focus out of it.
+				*/ }
+			{ ( deferChanges || !! maxItems ) && (
+				<div style={ {
+					marginTop: 24,
+					paddingTop: 16,
+					borderTop: '1px solid #ddd',
+				} }>
+					{ isOverLimit && (
+						<Notice
+							isDismissible={ false }
+							status="error"
+						>
+							{ sprintf(
+								/* translators: 1: maximum selectable. 2: number currently selected. */
+								__( 'Select no more than %1$d posts. %2$d are selected — remove some from the Current Selection tab to continue.', 'block-editor-components' ),
+								maxItems,
+								selection.length
+							) }
+						</Notice>
+					) }
+					<Flex
+						align="center"
+						justify="space-between"
+						style={ {
+							width: '100%',
+							marginTop: isOverLimit ? 16 : 0,
+							rowGap: 8,
+						} }
+						wrap
+					>
+						<FlexItem>
+							<span aria-live="polite">
+								{ selectionCountLabel( selection.length, maxItems ) }
+							</span>
+						</FlexItem>
+						{ deferChanges && (
+							<Flex
+								align="center"
+								justify="flex-end"
+								style={ {
+									gap: 8,
+									width: 'auto',
+								} }
+							>
+								<FlexItem>
+									<Button
+										variant="tertiary"
+										onClick={ requestDiscard }
+									>
+										{ __( 'Cancel', 'block-editor-components' ) }
+									</Button>
+								</FlexItem>
+								<FlexItem>
+									<Button
+										disabled={ isOverLimit }
+										variant="primary"
+										onClick={ () => {
+											onChange( draft );
+											closeModal();
+										} }
+									>
+										{ __( 'Confirm selection', 'block-editor-components' ) }
+									</Button>
+								</FlexItem>
+							</Flex>
+						) }
+					</Flex>
+				</div>
+			) }
+
+			{ deferChanges && (
+				<ConfirmDialog
+					cancelButtonText={ __( 'Keep editing', 'block-editor-components' ) }
+					confirmButtonText={ __( 'Discard changes', 'block-editor-components' ) }
+					isOpen={ isConfirmingDiscard }
+					onCancel={ () => setIsConfirmingDiscard( false ) }
+					onConfirm={ () => {
+						setIsConfirmingDiscard( false );
+						closeModal();
+					} }
+				>
+					{ __( 'Your changes to the selection have not been saved. Discard them?', 'block-editor-components' ) }
+				</ConfirmDialog>
+			) }
 		</Modal>
 	);
 }

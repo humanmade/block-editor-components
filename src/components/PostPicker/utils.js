@@ -117,3 +117,20 @@ export function getApplicableTaxonomies( taxonomies, taxObjects, postType ) {
 		return !! taxObject && ( taxObject.types ?? [] ).includes( postType );
 	} );
 }
+
+/**
+ * The selection after a post is ticked.
+ *
+ * A single slot replaces rather than refusing the tick: replacement is the
+ * obvious intent of a one-post picker, and refusing it leaves no route to a
+ * swap. Any higher limit is not enforced here — the draft is allowed over it
+ * so the replacement can be picked before the old entry is pruned.
+ *
+ * @param {number[]} values Currently selected post IDs, in display order.
+ * @param {number} postId The post just ticked.
+ * @param {?number} maxItems Maximum selectable, or null for no limit.
+ * @returns {number[]} The new selection.
+ */
+export function getSelectionAfterPick( values, postId, maxItems ) {
+	return maxItems === 1 ? [ postId ] : [ ...values, postId ];
+}

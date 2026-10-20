@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useMemo } from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
 	Button,
@@ -13,6 +13,7 @@ import {
 	SearchControl,
 	SelectControl,
 	Spinner,
+	__experimentalConfirmDialog as ConfirmDialog,
 } from '@wordpress/components';
 import { useViewportMatch } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
@@ -24,11 +25,16 @@ import TermSelector from '../TermSelector';
 import {
 	getApplicableTaxonomies,
 	getPostTypesKey,
+	getSelectionAfterPick,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
 	labelPartsForPost,
 	toPostTypes,
 } from './utils';
+
+// Space the sticky footer opens above itself. The pager cancels it when it is
+// the last thing before the footer, so the two rules read as one pair.
+const FOOTER_GAP = 24;
 
 /**
  * A post's checkbox label, with the post type prefix emphasised.
@@ -86,6 +92,8 @@ function PostList( props ) {
 		queryArgs,
 		onChange,
 		emptyMessage = __( 'No results found', 'block-editor-components' ),
+		hasFooterBelow = false,
+		maxItems = null,
 		page = 1,
 		showPostTypeLabels = false,
 		setPage = null,
@@ -134,16 +142,12 @@ function PostList( props ) {
 		) );
 	}, [ postTypesKey, queryArgs, skipQuery ] );
 
-	const { totalItems, totalPages } = useSelect( ( select ) => {
+	const { totalPages } = useSelect( ( select ) => {
 		if ( ! setPage || skipQuery ) {
-			return {
-				totalItems: 0,
-				totalPages: 0,
-			};
+			return { totalPages: 0 };
 		}
 
 		return {
-			totalItems: select( 'core' ).getEntityRecordsTotalItems( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
 			totalPages: select( 'core' ).getEntityRecordsTotalPages( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
 		};
 	}, [ postTypesKey, queryArgs, setPage, skipQuery ] );
@@ -227,7 +231,7 @@ function PostList( props ) {
 										label={ labelForCheckbox( post, showPostTypeLabels ? postTypeLabels : null ) }
 										onChange={ ( checked ) => {
 											if ( checked ) {
-												onChange( [ ...values, post.id ] );
+												onChange( getSelectionAfterPick( values, post.id, maxItems ) );
 											} else {
 												onChange( values.filter( value => ( value !== post.id ) ) );
 											}
@@ -261,60 +265,98 @@ function PostList( props ) {
 			{ setPage && ! isResolving && totalPages > 1 && (
 				<Flex
 					align="center"
-					justify="space-between"
+					justify="center"
 					style={ {
 						width: '100%',
 						marginTop: 24,
-						rowGap: 8,
+						// Sit against the footer's rule rather than a gap's width
+						// from it. Without a footer the gap is not the footer's
+						// to close, so leave the spacing alone.
+						marginBottom: hasFooterBelow ? -FOOTER_GAP : 0,
+						// Structure and spacing follow core's
+						// .block-editor-patterns__grid-pagination, but not its
+						// #2f2f2f rule: every other rule in this modal is #ddd,
+						// and a dark one here reads as a mistake. Please don't
+						// "correct" this back against the core source.
+						borderTop: '1px solid #ddd',
+						padding: 4,
+						gap: 12,
 					} }
-					wrap
 				>
+					<FlexItem
+						style={ {
+							display: 'flex',
+							alignItems: 'center',
+							gap: 4,
+						} }
+					>
+						<Button
+							aria-label={ __( 'First page', 'block-editor-components' ) }
+							disabled={ page <= 1 }
+							size="compact"
+							variant="tertiary"
+							onClick={ () => setPage( 1 ) }
+						>
+							<span>&laquo;</span>
+						</Button>
+						<Button
+							aria-label={ __( 'Previous page', 'block-editor-components' ) }
+							disabled={ page <= 1 }
+							size="compact"
+							variant="tertiary"
+							onClick={ () => setPage( page - 1 ) }
+						>
+							<span>&lsaquo;</span>
+						</Button>
+					</FlexItem>
 					{ /*
-						  Count left, controls right, as wp-admin's own .tablenav does.
-						  Spreading all three would float the count in the middle, where
-						  it shifts sideways whenever the page or total changes width.
+						  Not a control, but the only thing saying where you are, so
+						  it is announced rather than left to the buttons either side.
 						*/ }
 					<FlexItem
 						style={ {
-							// $font-size-x-small in @wordpress/base-styles.
-							fontSize: 11,
+							// $gray-700, as core's muted Text resolves to. Plain
+							// elements rather than __experimentalText: an experimental
+							// import is a rename waiting to happen in a published package.
+							color: '#757575',
+							fontSize: 12,
 						} }
 					>
-						{ sprintf(
-							/* translators: 1: current page number. 2: total number of pages. 3: total number of posts. */
-							__( 'Page %1$d of %2$d (%3$d posts)', 'block-editor-components' ),
-							page,
-							totalPages,
-							totalItems
-						) }
+						<span aria-live="polite">
+							{ sprintf(
+								/* translators: 1: current page number. 2: total number of pages. */
+								__( '%1$d of %2$d', 'block-editor-components' ),
+								page,
+								totalPages
+							) }
+						</span>
 					</FlexItem>
-					<Flex
-						align="center"
-						justify="flex-end"
+					<FlexItem
 						style={ {
-							gap: 8,
-							width: 'auto',
+							display: 'flex',
+							alignItems: 'center',
+							gap: 4,
 						} }
 					>
-						<FlexItem>
-							<Button
-								disabled={ page <= 1 }
-								variant="secondary"
-								onClick={ () => setPage( page - 1 ) }
-							>
-								{ __( 'Previous', 'block-editor-components' ) }
-							</Button>
-						</FlexItem>
-						<FlexItem>
-							<Button
-								disabled={ page >= totalPages }
-								variant="secondary"
-								onClick={ () => setPage( page + 1 ) }
-							>
-								{ __( 'Next', 'block-editor-components' ) }
-							</Button>
-						</FlexItem>
-					</Flex>
+						<Button
+							aria-label={ __( 'Next page', 'block-editor-components' ) }
+							disabled={ page >= totalPages }
+							size="compact"
+							variant="tertiary"
+							onClick={ () => setPage( page + 1 ) }
+						>
+							<span>&rsaquo;</span>
+						</Button>
+						<Button
+							aria-label={ __( 'Last page', 'block-editor-components' ) }
+							disabled={ page >= totalPages }
+							size="compact"
+							variant="tertiary"
+							onClick={ () => setPage( totalPages ) }
+						>
+							<span>&raquo;</span>
+						</Button>
+					</FlexItem>
 				</Flex>
 			) }
 		</>
@@ -360,6 +402,8 @@ function PostTypeSelector( props ) {
 function BrowsePanel( props ) {
 	const {
 		postType,
+		hasFooterBelow = false,
+		maxItems = null,
 		onChange,
 		values,
 		taxonomies,
@@ -522,6 +566,8 @@ function BrowsePanel( props ) {
 				} }
 			>
 				<PostList
+					hasFooterBelow={ hasFooterBelow }
+					maxItems={ maxItems }
 					page={ page }
 					postType={ selectedPostType }
 					queryArgs={ queryArgs }
@@ -532,6 +578,55 @@ function BrowsePanel( props ) {
 			</FlexItem>
 		</Flex>
 	);
+}
+
+/**
+ * Describe the size of a selection, and the limit it is working against.
+ *
+ * @param {number} count Number of selected posts.
+ * @param {?number} maxItems Maximum selectable, or null for no limit.
+ * @returns {string} Label.
+ */
+function selectionCountLabel( count, maxItems ) {
+	if ( ! maxItems ) {
+		return sprintf(
+			/* translators: %d: number of selected posts. */
+			__( '%d selected', 'block-editor-components' ),
+			count
+		);
+	}
+
+	return sprintf(
+		/* translators: 1: number of selected posts. 2: maximum selectable. */
+		__( '%1$d of %2$d selected', 'block-editor-components' ),
+		count,
+		maxItems
+	);
+}
+
+/**
+ * The nearest scrollable ancestor of a node.
+ *
+ * Found by computed overflow rather than by class name, so it survives core
+ * renaming the modal's content element.
+ *
+ * @param {?HTMLElement} node Node to search up from.
+ * @returns {?HTMLElement} The scroll container, or null if there is none.
+ */
+function getScrollParent( node ) {
+	let element = node?.parentElement;
+
+	while ( element ) {
+		const { overflowY } = window.getComputedStyle( element );
+
+		if ( overflowY === 'auto' || overflowY === 'scroll' ) {
+			return element;
+		}
+
+		element = element.parentElement;
+	}
+
+	return null;
 }
 
 /**
@@ -546,14 +641,97 @@ export function PostPickerModal( props ) {
 		postType = 'post',
 		taxonomies = [],
 		values = [],
+		deferChanges = false,
+		maxItems = null,
 		onChange,
 		setModalOpen,
 	} = props;
 
 	const postTypes = toPostTypes( postType );
 
+	// The draft only exists in deferred mode; `values` stays the source of
+	// truth otherwise, so live consumers see exactly the behaviour they had.
+	const [ draft, setDraft ] = useState( values );
+	const [ isConfirmingDiscard, setIsConfirmingDiscard ] = useState( false );
+
+	const selection = deferChanges ? draft : values;
+
+	const updateSelection = useCallback( ( nextValues ) => {
+		if ( deferChanges ) {
+			setDraft( nextValues );
+
+			return;
+		}
+
+		// Live mode has nowhere to park an over-limit selection and no confirm
+		// step to block, so the only enforcement available is to refuse the add.
+		if ( maxItems > 1 && nextValues.length > maxItems ) {
+			return;
+		}
+
+		onChange( nextValues );
+	}, [ deferChanges, maxItems, onChange ] );
+
+	// Order is meaningful — a reorder is unsaved work too.
+	const isDirty = deferChanges && (
+		draft.length !== values.length || draft.some( ( id, index ) => id !== values[ index ] )
+	);
+
+	const isOverLimit = !! maxItems && selection.length > maxItems;
+
+	const hasFooter = deferChanges || !! maxItems;
+
+	const footerRef = useRef();
+
+	// The footer has to escape the padding of the modal's scroll container: the
+	// bottom inset decides where it comes to rest, and the horizontal pair lets
+	// its rule reach the frame edges the way the modal header's does. Measured
+	// at runtime rather than hardcoded, because the padding has changed between
+	// @wordpress/components versions and this package builds against whichever
+	// one the site has. Left and right are read separately rather than assumed
+	// equal.
+	const [ scrollPadding, setScrollPadding ] = useState( {
+		bottom: 0,
+		left: 0,
+		right: 0,
+	} );
+
+	useEffect( () => {
+		const scrollParent = getScrollParent( footerRef.current );
+
+		if ( ! scrollParent ) {
+			return;
+		}
+
+		const computed = window.getComputedStyle( scrollParent );
+
+		setScrollPadding( {
+			bottom: parseFloat( computed.paddingBottom ) || 0,
+			left: parseFloat( computed.paddingLeft ) || 0,
+			right: parseFloat( computed.paddingRight ) || 0,
+		} );
+	}, [] );
+
+	const closeModal = () => setModalOpen( false );
+
+	/**
+	 * Leave without committing, checking first if there is anything to lose.
+	 *
+	 * The modal's ✕ and the Escape key both arrive here via `onRequestClose`,
+	 * so every way out of the modal asks the same question.
+	 */
+	const requestDiscard = () => {
+		if ( isDirty ) {
+			setIsConfirmingDiscard( true );
+
+			return;
+		}
+
+		closeModal();
+	};
+
 	// Memoised on the canonical key so that a reorder is not seen as a new query.
-	const selectionIdsKey = getSelectionIdsKey( values );
+	const selectionIdsKey = getSelectionIdsKey( selection );
 	const selectionQueryArgs = useMemo(
 		() => getSelectionQueryArgs( selectionIdsKey ),
 		[ selectionIdsKey ]
@@ -566,7 +744,7 @@ export function PostPickerModal( props ) {
 				maxWidth: '100%',
 			} }
 			title={ title }
-			onRequestClose={ () => setModalOpen( false ) }
+			onRequestClose={ requestDiscard }
 		>
 			<div style={ { marginTop: -16 } }>
 				<TabPanel
@@ -590,10 +768,12 @@ export function PostPickerModal( props ) {
 						} }>
 							{ tabPanel.name === 'browse' && (
 								<BrowsePanel
+									hasFooterBelow={ hasFooter }
+									maxItems={ maxItems }
 									postType={ postType }
 									taxonomies={ taxonomies }
-									values={ values }
-									onChange={ onChange }
+									values={ selection }
+									onChange={ updateSelection }
 								/>
 							) }
 
@@ -601,18 +781,139 @@ export function PostPickerModal( props ) {
 								<PostList
 									emptyMessage={ __( 'No posts selected yet. Use the Browse tab to add some.', 'block-editor-components' ) }
 									isSortable
+									maxItems={ maxItems }
 									postType={ postTypes }
 									queryArgs={ selectionQueryArgs }
 									showPostTypeLabels={ postTypes.length > 1 }
-									sortOrder={ values }
-									values={ values }
-									onChange={ onChange }
+									sortOrder={ selection }
+									values={ selection }
+									onChange={ updateSelection }
 								/>
 							) }
 						</div>
 					) }
 				</TabPanel>
 			</div>
+
+			{ /*
+				  The footer sits outside the TabPanel so that switching tabs
+				  neither remounts it nor moves focus out of it.
+
+				  Sticky, not a flex-pinned row, so that it mirrors core's own
+				  sticky modal header in the same scroll container rather than
+				  taking over the modal's scrolling. It also means the list
+				  ends above the footer instead of behind it: once scrolled to
+				  the bottom the footer returns to its place in the flow, so
+				  the last row is never covered.
+				*/ }
+			{ hasFooter && (
+				<div
+					ref={ footerRef }
+					style={ {
+						position: 'sticky',
+						zIndex: 1,
+						background: '#fff',
+						marginTop: FOOTER_GAP,
+						paddingTop: 16,
+						paddingBottom: 16,
+						borderTop: '1px solid #ddd',
+						// Two states to keep level with the frame, and each needs
+						// its own correction. Stuck: a sticky inset resolves
+						// against the scroll container's content box, so
+						// `bottom: 0` would stop short by that container's
+						// bottom padding and let the list show through. In flow:
+						// the inset does nothing, and the footer sits above the
+						// same padding, so pull the padding back with a negative
+						// margin. They do not compound — a bottom margin does not
+						// move the stuck position, only the flow one.
+						bottom: -scrollPadding.bottom,
+						marginBottom: -scrollPadding.bottom,
+						// Full bleed, so the rule runs the width of the modal as
+						// the header's does. The padding puts the contents back
+						// where the container's own padding had them.
+						marginLeft: -scrollPadding.left,
+						marginRight: -scrollPadding.right,
+						paddingLeft: scrollPadding.left,
+						paddingRight: scrollPadding.right,
+					} }
+				>
+					{ isOverLimit && (
+						<Notice
+							isDismissible={ false }
+							status="error"
+						>
+							{ sprintf(
+								/* translators: 1: maximum selectable. 2: number currently selected. */
+								__( 'Select no more than %1$d posts. %2$d are selected — remove some from the Current Selection tab to continue.', 'block-editor-components' ),
+								maxItems,
+								selection.length
+							) }
+						</Notice>
+					) }
+					<Flex
+						align="center"
+						justify="space-between"
+						style={ {
+							width: '100%',
+							marginTop: isOverLimit ? 16 : 0,
+							rowGap: 8,
+						} }
+						wrap
+					>
+						<FlexItem>
+							<span aria-live="polite">
+								{ selectionCountLabel( selection.length, maxItems ) }
+							</span>
+						</FlexItem>
+						{ deferChanges && (
+							<Flex
+								align="center"
+								justify="flex-end"
+								style={ {
+									gap: 8,
+									width: 'auto',
+								} }
+							>
+								<FlexItem>
+									<Button
+										variant="tertiary"
+										onClick={ requestDiscard }
+									>
+										{ __( 'Cancel', 'block-editor-components' ) }
+									</Button>
+								</FlexItem>
+								<FlexItem>
+									<Button
+										disabled={ isOverLimit }
+										variant="primary"
+										onClick={ () => {
+											onChange( draft );
+											closeModal();
+										} }
+									>
+										{ __( 'Confirm selection', 'block-editor-components' ) }
+									</Button>
+								</FlexItem>
+							</Flex>
+						) }
+					</Flex>
+				</div>
+			) }
+
+			{ deferChanges && (
+				<ConfirmDialog
+					cancelButtonText={ __( 'Keep editing', 'block-editor-components' ) }
+					confirmButtonText={ __( 'Discard changes', 'block-editor-components' ) }
+					isOpen={ isConfirmingDiscard }
+					onCancel={ () => setIsConfirmingDiscard( false ) }
+					onConfirm={ () => {
+						setIsConfirmingDiscard( false );
+						closeModal();
+					} }
+				>
+					{ __( 'Your changes to the selection have not been saved. Discard them?', 'block-editor-components' ) }
+				</ConfirmDialog>
+			) }
 		</Modal>
 	);
 }

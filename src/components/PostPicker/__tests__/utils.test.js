@@ -1,6 +1,7 @@
 import {
 	getApplicableTaxonomies,
 	getPostTypesKey,
+	getSelectionAfterPick,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
 	labelPartsForPost,
@@ -231,5 +232,36 @@ describe( 'getApplicableTaxonomies', () => {
 
 	it( 'should ignore taxonomy objects that were never asked for', () => {
 		expect( getApplicableTaxonomies( [ 'shared' ], taxObjects, 'post' ) ).toEqual( [ 'shared' ] );
+	} );
+} );
+
+describe( 'getSelectionAfterPick', () => {
+
+	it( 'should append when there is no limit', () => {
+		expect( getSelectionAfterPick( [ 2, 3 ], 1, null ) ).toEqual( [ 2, 3, 1 ] );
+	} );
+
+	it( 'should replace rather than append at a limit of one', () => {
+		expect( getSelectionAfterPick( [ 2 ], 1, 1 ) ).toEqual( [ 1 ] );
+	} );
+
+	it( 'should fill the single slot when nothing is selected yet', () => {
+		expect( getSelectionAfterPick( [], 1, 1 ) ).toEqual( [ 1 ] );
+	} );
+
+	it( 'should let a higher limit be exceeded, so the old entry can be pruned after', () => {
+		expect( getSelectionAfterPick( [ 1, 2, 3, 4 ], 5, 4 ) ).toEqual( [ 1, 2, 3, 4, 5 ] );
+	} );
+
+	it( 'should append to the end, preserving the existing order', () => {
+		expect( getSelectionAfterPick( [ 10, 2 ], 7, 4 ) ).toEqual( [ 10, 2, 7 ] );
+	} );
+
+	it( 'should not mutate the selection it is given', () => {
+		const values = [ 2, 3 ];
+
+		getSelectionAfterPick( values, 1, null );
+
+		expect( values ).toEqual( [ 2, 3 ] );
 	} );
 } );

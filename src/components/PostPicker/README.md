@@ -79,6 +79,65 @@ The *Current Selection* tab shows the selection in `values` order.
 />
 ```
 
+#### `deferChanges`
+
+Hold the selection in a draft inside the modal and fire `onChange` once, when
+the editor confirms, rather than on every tick.
+
+| Type                                 | Required                             | Default                              |
+|--------------------------------------|--------------------------------------|--------------------------------------|
+| `Boolean`                            | no                                   | `false`
+
+**Prefer `true` for new code.** With it off — the default, kept so that existing
+consumers are unaffected — every tick is committed immediately, which means the
+modal's ✕ reads as *Cancel* but behaves as *Close*: there is nothing left to
+discard. It also makes swapping one post for another at a low `maxItems`
+awkward, because the new post cannot be ticked until the old one is unticked.
+
+With it on, the modal gains a footer with *Confirm selection* and *Cancel*.
+Ticking, unticking and reordering all edit a local draft; `onChange` fires once,
+on confirm, with the final array. *Cancel*, the ✕ and the Escape key all take
+the same route out, and prompt for confirmation first if the draft differs from
+`values`.
+
+Leave it off if the consumer renders a live preview from `onChange` and relies
+on seeing each change as it is made.
+
+```jsx
+<PostPickerButton
+	deferChanges
+	maxItems={ 4 }
+	onChange={ newValue => setAttributes( { postIds: newValue } ) }
+	values={ attributes.postIds || [] }
+/>
+```
+
+#### `maxItems`
+
+The maximum number of posts that can be selected. Omit it for no limit.
+
+| Type                                 | Required                             | Default                              |
+|--------------------------------------|--------------------------------------|--------------------------------------|
+| `Number`                             | no                                   | `null`
+
+Unticked checkboxes are never disabled at the limit: that gives no route to a
+replacement, and leaves the editor guessing why a row is inert.
+
+* **`maxItems={ 1 }`** — picking a post replaces the current one. Replacement is
+  the obvious intent of a single-slot picker, so refusing the tick would only be
+  an extra step. This applies in both modes.
+* **`maxItems` above 1, with `deferChanges`** — the draft may exceed the limit,
+  but *Confirm selection* is blocked while it does, with a notice naming the
+  limit and the current count. This is what makes the natural motion work: pick
+  the replacement first, then prune the old entry from *Current Selection*.
+* **`maxItems` above 1, without `deferChanges`** — there is no draft to park an
+  over-limit selection in and no confirm step to block, so the only enforcement
+  available is to refuse the add. The tick does nothing. This is the main reason
+  to pair `maxItems` with `deferChanges`.
+
+A count — `3 of 4 selected` — is shown below the tabs whenever `maxItems` is
+set, so the limit is visible before it is reached rather than only when it bites.
+
 #### `taxonomies`
 
 Taxonomies that results can be filtered by. Array of taxonomy slugs. e.g. `[ 'category', 'post_tag' ]`.

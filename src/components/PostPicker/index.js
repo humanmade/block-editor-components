@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo } from 'react';
 
 import {
 	Button,
@@ -11,16 +11,71 @@ import {
 	Modal,
 	Notice,
 	SearchControl,
+	SelectControl,
 	Spinner,
 } from '@wordpress/components';
+import { useViewportMatch } from '@wordpress/compose';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 import TermSelector from '../TermSelector';
 
+import {
+	getApplicableTaxonomies,
+	getPostTypesKey,
+	getSelectionIdsKey,
+	getSelectionQueryArgs,
+	labelPartsForPost,
+	toPostTypes,
+} from './utils';
+
+/**
+ * A post's checkbox label, with the post type prefix emphasised.
+ *
+ * @param {object} post Post record.
+ * @param {?object} postTypeLabels Singular labels keyed by slug, or null for no prefix.
+ * @returns {ReactNode|string} Label.
+ */
+function labelForCheckbox( post, postTypeLabels ) {
+	const { prefix, title } = labelPartsForPost( post, postTypeLabels );
+
+	if ( ! prefix ) {
+		return title;
+	}
+
+	return (
+		<>
+			<strong>{ prefix }</strong>
+			{ ' ' }
+			{ title }
+		</>
+	);
+}
+
+/**
+ * Resolve post type slugs to their singular labels.
+ *
+ * Falls back to the slug while the post type object is still loading, so a
+ * label is never rendered empty.
+ *
+ * @param {string[]} postTypes Post type slugs.
+ * @returns {object} Singular label, keyed by slug.
+ */
+function usePostTypeLabels( postTypes ) {
+	return useSelect( select => Object.fromEntries( postTypes.map( slug => {
+		const postTypeObject = select( 'core' ).getPostType( slug );
+
+		return [ slug, postTypeObject?.labels?.singular_name || postTypeObject?.name || slug ];
+	} ) ), [ getPostTypesKey( postTypes ) ] ); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
 /**
  * List of selectable posts
+ *
+ * Accepts one or more post types. Multiple types are fetched separately and
+ * concatenated, which is only coherent for an exact `include` query — pass a
+ * single type when paginating.
  *
  * @param {object} props Component props
  * @returns {ReactNode} Component
@@ -30,17 +85,68 @@ function PostList( props ) {
 		postType,
 		queryArgs,
 		onChange,
+		emptyMessage = __( 'No results found', 'block-editor-components' ),
+		page = 1,
+		showPostTypeLabels = false,
+		setPage = null,
+		sortOrder = null,
 		values = [],
 		isSortable = false,
 	} = props;
 
-	const queriedPosts = useSelect( ( select ) => {
-		return select( 'core' ).getEntityRecords( 'postType', postType, queryArgs ) ?? [];
-	}, [ postType, queryArgs ] );
+	const postTypes = toPostTypes( postType );
 
+	const postTypesKey = getPostTypesKey( postTypes );
+
+	const postTypeLabels = usePostTypeLabels( postTypes );
+
+	// Null query args mean there is nothing worth asking for, so skip the request.
+	const skipQuery = ! queryArgs;
+
+	const queriedPosts = useSelect( ( select ) => {
+		if ( skipQuery ) {
+			return [];
+		}
+
+		const posts = postTypes.reduce( ( accumulator, type ) => ( [
+			...accumulator,
+			...( select( 'core' ).getEntityRecords( 'postType', type, queryArgs ) ?? [] ),
+		] ), [] );
+
+		// The caller already holds the order, so use it rather than orderby=include.
+		if ( ! sortOrder ) {
+			return posts;
+		}
+
+		return [ ...posts ].sort( ( a, b ) => sortOrder.indexOf( a.id ) - sortOrder.indexOf( b.id ) );
+	}, [ postTypesKey, queryArgs, skipQuery, sortOrder ] );
+
+	// Resolving while *any* request is in flight, so the list is not revealed piecemeal.
 	const isResolving = useSelect( ( select ) => {
-		return select( 'core/data' ).isResolving( 'core', 'getEntityRecords', [ 'postType', postType, queryArgs ] );
-	} );
+		if ( skipQuery ) {
+			return false;
+		}
+
+		return postTypes.some( type => select( 'core/data' ).isResolving(
+			'core',
+			'getEntityRecords',
+			[ 'postType', type, queryArgs ]
+		) );
+	}, [ postTypesKey, queryArgs, skipQuery ] );
+
+	const { totalItems, totalPages } = useSelect( ( select ) => {
+		if ( ! setPage || skipQuery ) {
+			return {
+				totalItems: 0,
+				totalPages: 0,
+			};
+		}
+
+		return {
+			totalItems: select( 'core' ).getEntityRecordsTotalItems( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
+			totalPages: select( 'core' ).getEntityRecordsTotalPages( 'postType', postTypes[ 0 ], queryArgs ) ?? 0,
+		};
+	}, [ postTypesKey, queryArgs, setPage, skipQuery ] );
 
 	const reorderUp = ( postId ) => {
 		const index = values.indexOf( postId );
@@ -75,70 +181,173 @@ function PostList( props ) {
 	};
 
 	return (
-		<div style={ {
-			// Overflow at top.
-			marginTop: -24,
-			paddingTop: 24,
-			// Offset to display checkbox focus outline.
-			paddingLeft: 4,
-			marginLeft: -4,
-		} }>
-			{
-				( isResolving && <Spinner /> )
-					|| ( queriedPosts.length < 1 &&
-						<Notice
-							isDismissible={ false }
-						>
-							{ __( 'No results found', 'block-editor-components' ) }
-						</Notice>
-					)
-					|| (
-						queriedPosts.map( post => (
-							<div
-								style={ {
-									display: 'grid',
-									gridTemplateColumns: '1fr auto',
-									marginRight: -2,
-									paddingRight: 2,
-								} }
+		<>
+			<div style={ {
+				// Overflow at top.
+				marginTop: -24,
+				paddingTop: 24,
+				// Offset to display checkbox focus outline.
+				paddingLeft: 4,
+				marginLeft: -4,
+				// Space between rows, not after the last one.
+				display: 'flex',
+				flexDirection: 'column',
+				gap: 4,
+			} }>
+				{
+					( isResolving && <Spinner /> )
+						|| ( queriedPosts.length < 1 &&
+							<Notice
+								isDismissible={ false }
 							>
-								<CheckboxControl
+								{ emptyMessage }
+							</Notice>
+						)
+						|| (
+							queriedPosts.map( post => (
+								<div
 									key={ post.id }
-									checked={ values.includes( post.id ) }
-									label={ post.title?.rendered || __( '(No title)', 'block-editor-components' ) }
-									onChange={ ( checked ) => {
-										if ( checked ) {
-											onChange( [ ...values, post.id ] );
-										} else {
-											onChange( values.filter( value => ( value !== post.id ) ) );
-										}
+									style={ {
+										display: 'grid',
+										gridTemplateColumns: 'minmax( 0, 1fr ) auto',
+										marginRight: -2,
+										paddingRight: 2,
 									} }
-								/>
-								{ isSortable && (
-									<ButtonGroup>
-										<Button
-											icon={ 'arrow-up-alt2' }
-											iconSize={ 12 }
-											isSmall
-											label={ __( 'Move up', 'block-editor-components' ) }
-											variant="secondary"
-											onClick={ () => reorderUp( post.id ) }
-										/>
-										<Button
-											icon={ 'arrow-down-alt2' }
-											iconSize={ 12 }
-											isSmall
-											label={ __( 'Move down', 'block-editor-components' ) }
-											variant="secondary"
-											onClick={ () => reorderDown( post.id ) }
-										/>
-									</ButtonGroup>
-								) }
-							</div>
-						) )
-					)
-			}
-		</div>
+								>
+									<CheckboxControl
+										checked={ values.includes( post.id ) }
+										/*
+										  `label` is typed as a string, but the control passes it
+										  straight through as children of its <label>, so a node
+										  renders. Deliberate: flattening this back to a string to
+										  satisfy the type would silently lose the bold prefix.
+										  The <strong> adds no semantics, so the accessible name is
+										  still the one string "Post: Some title".
+										*/
+										label={ labelForCheckbox( post, showPostTypeLabels ? postTypeLabels : null ) }
+										onChange={ ( checked ) => {
+											if ( checked ) {
+												onChange( [ ...values, post.id ] );
+											} else {
+												onChange( values.filter( value => ( value !== post.id ) ) );
+											}
+										} }
+									/>
+									{ isSortable && (
+										<ButtonGroup>
+											<Button
+												icon={ 'arrow-up-alt2' }
+												iconSize={ 12 }
+												isSmall
+												label={ __( 'Move up', 'block-editor-components' ) }
+												variant="secondary"
+												onClick={ () => reorderUp( post.id ) }
+											/>
+											<Button
+												icon={ 'arrow-down-alt2' }
+												iconSize={ 12 }
+												isSmall
+												label={ __( 'Move down', 'block-editor-components' ) }
+												variant="secondary"
+												onClick={ () => reorderDown( post.id ) }
+											/>
+										</ButtonGroup>
+									) }
+								</div>
+							) )
+						)
+				}
+			</div>
+			{ setPage && ! isResolving && totalPages > 1 && (
+				<Flex
+					align="center"
+					justify="space-between"
+					style={ {
+						width: '100%',
+						marginTop: 24,
+						rowGap: 8,
+					} }
+					wrap
+				>
+					{ /*
+						  Count left, controls right, as wp-admin's own .tablenav does.
+						  Spreading all three would float the count in the middle, where
+						  it shifts sideways whenever the page or total changes width.
+						*/ }
+					<FlexItem
+						style={ {
+							// $font-size-x-small in @wordpress/base-styles.
+							fontSize: 11,
+						} }
+					>
+						{ sprintf(
+							/* translators: 1: current page number. 2: total number of pages. 3: total number of posts. */
+							__( 'Page %1$d of %2$d (%3$d posts)', 'block-editor-components' ),
+							page,
+							totalPages,
+							totalItems
+						) }
+					</FlexItem>
+					<Flex
+						align="center"
+						justify="flex-end"
+						style={ {
+							gap: 8,
+							width: 'auto',
+						} }
+					>
+						<FlexItem>
+							<Button
+								disabled={ page <= 1 }
+								variant="secondary"
+								onClick={ () => setPage( page - 1 ) }
+							>
+								{ __( 'Previous', 'block-editor-components' ) }
+							</Button>
+						</FlexItem>
+						<FlexItem>
+							<Button
+								disabled={ page >= totalPages }
+								variant="secondary"
+								onClick={ () => setPage( page + 1 ) }
+							>
+								{ __( 'Next', 'block-editor-components' ) }
+							</Button>
+						</FlexItem>
+					</Flex>
+				</Flex>
+			) }
+		</>
+	);
+}
+
+/**
+ * Post type selector for the browse panel.
+ *
+ * Deliberately single choice: a single getEntityRecords request cannot span
+ * post types, so the browse list queries one type at a time.
+ *
+ * @param {object} props Component props.
+ * @returns {ReactNode} Component.
+ */
+function PostTypeSelector( props ) {
+	const { postTypes, value, onChange } = props;
+
+	const postTypeLabels = usePostTypeLabels( postTypes );
+
+	const options = postTypes.map( slug => ( {
+		value: slug,
+		label: postTypeLabels[ slug ],
+	} ) );
+
+	return (
+		<SelectControl
+			__nextHasNoMarginBottom
+			label={ __( 'Post type', 'block-editor-components' ) }
+			options={ options }
+			value={ value }
+			onChange={ onChange }
+		/>
 	);
 }
 
@@ -156,13 +365,29 @@ function BrowsePanel( props ) {
 		taxonomies,
 	} = props;
 
+	const postTypes = toPostTypes( postType );
+
+	// Below WordPress's own 782px admin breakpoint the two columns are too
+	// narrow to be useful, so filters stack above the list instead.
+	const isStacked = useViewportMatch( 'medium', '<' );
+
 	const [ search, setSearch ] = useState( '' );
+	const [ page, setPage ] = useState( 1 );
+	const [ selectedPostType, setSelectedPostType ] = useState( postTypes[ 0 ] );
+	const [ taxQueries, setTaxQueries ] = useState( {} );
 
 	const taxObjects = useSelect( select => {
 		return taxonomies.map( taxonomy => select( 'core' ).getTaxonomy( taxonomy ) );
 	}, [ taxonomies ] );
 
-	const [ taxQueries, setTaxQueries ] = useState( [] );
+	const applicableTaxonomies = getApplicableTaxonomies( taxonomies, taxObjects, selectedPostType );
+
+	// Guard against the postType prop changing out from under the selection.
+	useEffect( () => {
+		if ( ! postTypes.includes( selectedPostType ) ) {
+			setSelectedPostType( postTypes[ 0 ] );
+		}
+	}, [ getPostTypesKey( postTypes ), selectedPostType ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
 	 * Helper function to update tax query for a taxonomy.
@@ -181,58 +406,126 @@ function BrowsePanel( props ) {
 				...taxQueries,
 				[`${taxObject.rest_base}`]: newTerms,
 			} );
+			setPage( 1 );
 		}
 	}, [ taxQueries, taxObjects ] );
 
-	// Ensure initial tax query state is set.
-	// Use effect to account for delay loading tax objects.
-	useEffect( () => {
-		taxObjects.forEach( taxObject => {
-			if ( taxObject && ! taxQueries[ taxObject.rest_base ] ) {
-				updateTaxQueryState( taxObject.rest_base, [] );
-			}
-		} );
-	}, [ taxObjects, updateTaxQueryState, taxQueries ] );
+	/**
+	 * Switch the browsed post type.
+	 *
+	 * Drops any taxonomy filter that does not apply to the new post type, so a
+	 * filter cannot stay active while its control is no longer rendered.
+	 *
+	 * @param {string} newPostType Post type slug.
+	 */
+	const updateSelectedPostType = ( newPostType ) => {
+		const allowedRestBases = getApplicableTaxonomies( taxonomies, taxObjects, newPostType )
+			.map( taxonomy => taxObjects.find( t => t && t.slug === taxonomy ).rest_base );
 
-	const queryArgs = {
-		search: search || undefined, // When empty, set as undefined to omit query var from API request.
-		per_page: 30,
-		...taxQueries,
-		context: 'view',
+		setTaxQueries( Object.fromEntries(
+			Object.entries( taxQueries ).filter( ( [ restBase ] ) => allowedRestBases.includes( restBase ) )
+		) );
+		setSelectedPostType( newPostType );
+		setPage( 1 );
 	};
+
+	// Only send tax queries that apply to the selected post type and have terms.
+	const appliedTaxQueries = {};
+
+	applicableTaxonomies.forEach( taxonomy => {
+		const taxObject = taxObjects.find( t => t && t.slug === taxonomy );
+		const terms = taxQueries[ taxObject.rest_base ];
+
+		if ( terms && terms.length > 0 ) {
+			appliedTaxQueries[ taxObject.rest_base ] = terms;
+		}
+	} );
+
+	const appliedTaxQueriesKey = JSON.stringify( appliedTaxQueries );
+
+	const queryArgs = useMemo( () => ( {
+		search: search || undefined, // When empty, set as undefined to omit query var from API request.
+		page,
+		per_page: 30,
+		...appliedTaxQueries,
+		context: 'view',
+	} ), [ search, page, appliedTaxQueriesKey ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<Flex
 			align="flex-start"
-			style={ { gap: 24 } }
+			direction={ isStacked ? 'column' : 'row' }
+			style={ {
+				gap: 24,
+				width: '100%',
+			} }
 		>
 			<FlexItem
 				style={ {
-					width: '35%',
+					// minWidth lets the column shrink below its content width
+					// rather than overflowing the modal.
+					width: isStacked ? '100%' : '35%',
+					minWidth: 0,
 				} }
 			>
-				<SearchControl
-					label={ __( 'Search Posts', 'block-editor-components' ) }
-					style={ { marginBottom: 24 } }
-					value={ search }
-					onChange={ ( text ) => setSearch( text ) }
-				/>
-				{ taxonomies.map( taxonomy => {
-					const taxObject = taxObjects.find( t => t && t.slug === taxonomy );
-
-					return taxObject ? (
-						<TermSelector
-							taxonomy={ taxonomy }
-							value={ taxQueries[ taxObject.rest_base ] }
-							onChange={ terms => updateTaxQueryState( taxonomy, terms ) }
+				{ /*
+				  The post type selector is scope, not a filter: it decides which
+				  collection is queried and therefore which taxonomy filters exist
+				  at all. It stays above the filters, and divided from them, so it
+				  reads as governing them. Please don't tidy it into the stack.
+				*/ }
+				{ postTypes.length > 1 && (
+					<div style={ {
+						marginBottom: 24,
+						paddingBottom: 24,
+						borderBottom: '1px solid #ddd',
+					} }>
+						<PostTypeSelector
+							postTypes={ postTypes }
+							value={ selectedPostType }
+							onChange={ updateSelectedPostType }
 						/>
-					) : null;
-				} ) }
+					</div>
+				) }
+				<div style={ {
+					display: 'flex',
+					flexDirection: 'column',
+					gap: 24,
+				} }>
+					<SearchControl
+						__nextHasNoMarginBottom
+						label={ __( 'Search Posts', 'block-editor-components' ) }
+						value={ search }
+						onChange={ ( text ) => {
+							setSearch( text );
+							setPage( 1 );
+						} }
+					/>
+					{ applicableTaxonomies.map( taxonomy => {
+						const taxObject = taxObjects.find( t => t && t.slug === taxonomy );
+
+						return (
+							<TermSelector
+								key={ taxonomy }
+								taxonomy={ taxonomy }
+								value={ taxQueries[ taxObject.rest_base ] ?? [] }
+								onChange={ terms => updateTaxQueryState( taxonomy, terms ) }
+							/>
+						);
+					} ) }
+				</div>
 			</FlexItem>
-			<FlexItem style={ { width: '65%' } }>
+			<FlexItem
+				style={ {
+					width: isStacked ? '100%' : '65%',
+					minWidth: 0,
+				} }
+			>
 				<PostList
-					postType={ postType }
+					page={ page }
+					postType={ selectedPostType }
 					queryArgs={ queryArgs }
+					setPage={ setPage }
 					values={ values }
 					onChange={ onChange }
 				/>
@@ -257,6 +550,15 @@ export function PostPickerModal( props ) {
 		setModalOpen,
 	} = props;
 
+	const postTypes = toPostTypes( postType );
+
+	// Memoised on the canonical key so that a reorder is not seen as a new query.
+	const selectionIdsKey = getSelectionIdsKey( values );
+	const selectionQueryArgs = useMemo(
+		() => getSelectionQueryArgs( selectionIdsKey ),
+		[ selectionIdsKey ]
+	);
+
 	return (
 		<Modal
 			style={ {
@@ -272,9 +574,6 @@ export function PostPickerModal( props ) {
 						{
 							name: 'browse',
 							title: __( 'Browse Posts', 'block-editor-components' ),
-							content: () => (
-								<>Foo</>
-							),
 						},
 						{
 							name: 'selection',
@@ -300,13 +599,12 @@ export function PostPickerModal( props ) {
 
 							{ tabPanel.name === 'selection' && (
 								<PostList
+									emptyMessage={ __( 'No posts selected yet. Use the Browse tab to add some.', 'block-editor-components' ) }
 									isSortable
-									postType={ postType }
-									queryArgs={ {
-										include: values,
-										orderby: 'include',
-										per_page: values.length,
-									} }
+									postType={ postTypes }
+									queryArgs={ selectionQueryArgs }
+									showPostTypeLabels={ postTypes.length > 1 }
+									sortOrder={ values }
 									values={ values }
 									onChange={ onChange }
 								/>

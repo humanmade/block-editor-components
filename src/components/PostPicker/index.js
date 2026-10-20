@@ -264,8 +264,12 @@ function PostList( props ) {
 					style={ {
 						width: '100%',
 						marginTop: 24,
-						// Core's own .block-editor-patterns__grid-pagination.
-						borderTop: '1px solid #2f2f2f',
+						// Structure and spacing follow core's
+						// .block-editor-patterns__grid-pagination, but not its
+						// #2f2f2f rule: every other rule in this modal is #ddd,
+						// and a dark one here reads as a mistake. Please don't
+						// "correct" this back against the core source.
+						borderTop: '1px solid #ddd',
 						padding: 4,
 						gap: 12,
 					} }

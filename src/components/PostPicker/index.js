@@ -640,11 +640,18 @@ export function PostPickerModal( props ) {
 
 	const footerRef = useRef();
 
-	// The modal's scroll container carries its own bottom padding, which insets
-	// where a sticky footer comes to rest. Measured at runtime rather than
-	// hardcoded: the padding has changed between @wordpress/components
-	// versions, and this package builds against whichever one the site has.
-	const [ scrollPaddingBottom, setScrollPaddingBottom ] = useState( 0 );
+	// The footer has to escape the padding of the modal's scroll container: the
+	// bottom inset decides where it comes to rest, and the horizontal pair lets
+	// its rule reach the frame edges the way the modal header's does. Measured
+	// at runtime rather than hardcoded, because the padding has changed between
+	// @wordpress/components versions and this package builds against whichever
+	// one the site has. Left and right are read separately rather than assumed
+	// equal.
+	const [ scrollPadding, setScrollPadding ] = useState( {
+		bottom: 0,
+		left: 0,
+		right: 0,
+	} );
 
 	useEffect( () => {
 		const scrollParent = getScrollParent( footerRef.current );
@@ -653,9 +660,13 @@ export function PostPickerModal( props ) {
 			return;
 		}
 
-		setScrollPaddingBottom(
-			parseFloat( window.getComputedStyle( scrollParent ).paddingBottom ) || 0
-		);
+		const computed = window.getComputedStyle( scrollParent );
+
+		setScrollPadding( {
+			bottom: parseFloat( computed.paddingBottom ) || 0,
+			left: parseFloat( computed.paddingLeft ) || 0,
+			right: parseFloat( computed.paddingRight ) || 0,
+		} );
 	}, [] );
 
 	const closeModal = () => setModalOpen( false );
@@ -760,16 +771,22 @@ export function PostPickerModal( props ) {
 						background: '#fff',
 						marginTop: 24,
 						paddingTop: 16,
+						paddingBottom: 16,
 						borderTop: '1px solid #ddd',
 						// A sticky inset resolves against the scroll container's
 						// content box, so `bottom: 0` would stop short of the
 						// frame by that container's own bottom padding and let
 						// the list show through the gap. Overshoot by the same
-						// amount, and pad by it too so the buttons keep their
-						// distance from the frame edge. The inset only applies
-						// while stuck, so the end of the list is unaffected.
-						bottom: -scrollPaddingBottom,
-						paddingBottom: 16 + scrollPaddingBottom,
+						// amount. The inset applies only while stuck, so the end
+						// of the list is unaffected.
+						bottom: -scrollPadding.bottom,
+						// Full bleed, so the rule runs the width of the modal as
+						// the header's does. The padding puts the contents back
+						// where the container's own padding had them.
+						marginLeft: -scrollPadding.left,
+						marginRight: -scrollPadding.right,
+						paddingLeft: scrollPadding.left,
+						paddingRight: scrollPadding.right,
 					} }
 				>
 					{ isOverLimit && (

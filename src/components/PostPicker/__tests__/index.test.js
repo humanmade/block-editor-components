@@ -6,7 +6,9 @@ import { PostPickerModal } from '../index';
 jest.mock( '@wordpress/i18n', () => ( {
 	__: ( value ) => value,
 	sprintf: ( format, ...args ) => args.reduce(
-		( carry, arg, index ) => carry.replace( `%${ index + 1 }$d`, arg ),
+		( carry, arg, index ) => carry
+			.replace( `%${ index + 1 }$d`, arg )
+			.replace( `%${ index + 1 }$s`, arg ),
 		format
 	),
 } ) );
@@ -127,16 +129,19 @@ const POSTS = {
 	post: [
 		{
 			id: 1,
+			type: 'post',
 			title: { rendered: 'Post one' },
 		},
 		{
 			id: 2,
+			type: 'post',
 			title: { rendered: 'Post two' },
 		},
 	],
 	page: [
 		{
 			id: 10,
+			type: 'page',
 			title: { rendered: 'Page ten' },
 		},
 	],
@@ -379,7 +384,20 @@ describe( 'PostPicker current selection', () => {
 
 		const labels = screen.getAllByRole( 'checkbox' ).map( input => input.parentNode.textContent );
 
-		expect( labels ).toEqual( [ 'Page ten', 'Post two', 'Post one' ] );
+		expect( labels ).toEqual( [ 'Page: Page ten', 'Post: Post two', 'Post: Post one' ] );
+	} );
+
+	it( 'omits the post type prefix for a single post type', () => {
+		renderModal( {
+			postType: [ 'post' ],
+			values: [ 2, 1 ],
+		} );
+
+		fireEvent.click( screen.getByText( 'Current Selection' ) );
+
+		const labels = screen.getAllByRole( 'checkbox' ).map( input => input.parentNode.textContent );
+
+		expect( labels ).toEqual( [ 'Post two', 'Post one' ] );
 	} );
 
 	it( 'shows the spinner while any of the per-type requests is in flight', () => {
@@ -421,7 +439,7 @@ describe( 'PostPicker current selection', () => {
 		const before = distinctQueries();
 
 		expect( before ).toHaveLength( 1 );
-		expect( renderedOrder() ).toEqual( [ 'Page ten', 'Post two', 'Post one' ] );
+		expect( renderedOrder() ).toEqual( [ 'Page: Page ten', 'Post: Post two', 'Post: Post one' ] );
 
 		// Same IDs, new display order.
 		rerender(
@@ -436,7 +454,7 @@ describe( 'PostPicker current selection', () => {
 
 		// `include` is canonical, so the order change is free — still one query.
 		expect( distinctQueries() ).toEqual( before );
-		expect( renderedOrder() ).toEqual( [ 'Post one', 'Page ten', 'Post two' ] );
+		expect( renderedOrder() ).toEqual( [ 'Post: Post one', 'Page: Page ten', 'Post: Post two' ] );
 	} );
 
 	it( 'issues no request and explains itself when nothing is selected', () => {

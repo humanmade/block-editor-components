@@ -34,6 +34,49 @@ function toPostTypes( postType ) {
 }
 
 /**
+ * Build a checkbox label for a post.
+ *
+ * When a selection spans post types the type is prefixed into the label
+ * itself, so assistive technology reads it as part of the accessible name
+ * rather than as a separate element.
+ *
+ * @param {object} post Post record.
+ * @param {?object} postTypeLabels Singular labels keyed by slug, or null for no prefix.
+ * @returns {string} Label.
+ */
+function labelForPost( post, postTypeLabels ) {
+	const title = post.title?.rendered || __( '(No title)', 'block-editor-components' );
+
+	if ( ! postTypeLabels ) {
+		return title;
+	}
+
+	return sprintf(
+		/* translators: 1: post type singular label. 2: post title. */
+		__( '%1$s: %2$s', 'block-editor-components' ),
+		postTypeLabels[ post.type ] || post.type,
+		title
+	);
+}
+
+/**
+ * Resolve post type slugs to their singular labels.
+ *
+ * Falls back to the slug while the post type object is still loading, so a
+ * label is never rendered empty.
+ *
+ * @param {string[]} postTypes Post type slugs.
+ * @returns {object} Singular label, keyed by slug.
+ */
+function usePostTypeLabels( postTypes ) {
+	return useSelect( select => Object.fromEntries( postTypes.map( slug => {
+		const postTypeObject = select( 'core' ).getPostType( slug );
+
+		return [ slug, postTypeObject?.labels?.singular_name || postTypeObject?.name || slug ];
+	} ) ), [ postTypes.join( ',' ) ] ); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+/**
  * List of selectable posts
  *
  * Accepts one or more post types. Multiple types are fetched separately and
@@ -50,6 +93,7 @@ function PostList( props ) {
 		onChange,
 		emptyMessage = __( 'No results found', 'block-editor-components' ),
 		page = 1,
+		showPostTypeLabels = false,
 		setPage = null,
 		sortOrder = null,
 		values = [],
@@ -60,6 +104,8 @@ function PostList( props ) {
 
 	// Stable dependency for the list of post types.
 	const postTypesKey = postTypes.join( ',' );
+
+	const postTypeLabels = usePostTypeLabels( postTypes );
 
 	// Null query args mean there is nothing worth asking for, so skip the request.
 	const skipQuery = ! queryArgs;
@@ -177,7 +223,7 @@ function PostList( props ) {
 								>
 									<CheckboxControl
 										checked={ values.includes( post.id ) }
-										label={ post.title?.rendered || __( '(No title)', 'block-editor-components' ) }
+										label={ labelForPost( post, showPostTypeLabels ? postTypeLabels : null ) }
 										onChange={ ( checked ) => {
 											if ( checked ) {
 												onChange( [ ...values, post.id ] );
@@ -286,18 +332,12 @@ function PostList( props ) {
 function PostTypeSelector( props ) {
 	const { postTypes, value, onChange } = props;
 
-	const postTypeObjects = useSelect( select => {
-		return postTypes.map( slug => select( 'core' ).getPostType( slug ) );
-	}, [ postTypes.join( ',' ) ] );
+	const postTypeLabels = usePostTypeLabels( postTypes );
 
-	const options = postTypes.map( ( slug, index ) => {
-		const postTypeObject = postTypeObjects[ index ];
-
-		return {
-			value: slug,
-			label: postTypeObject?.labels?.singular_name || postTypeObject?.name || slug,
-		};
-	} );
+	const options = postTypes.map( slug => ( {
+		value: slug,
+		label: postTypeLabels[ slug ],
+	} ) );
 
 	return (
 		<SelectControl
@@ -580,6 +620,7 @@ export function PostPickerModal( props ) {
 									isSortable
 									postType={ postTypes }
 									queryArgs={ selectionQueryArgs }
+									showPostTypeLabels={ postTypes.length > 1 }
 									sortOrder={ values }
 									values={ values }
 									onChange={ onChange }

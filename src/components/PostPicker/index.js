@@ -23,6 +23,7 @@ import TermSelector from '../TermSelector';
 
 import {
 	getApplicableTaxonomies,
+	getPostTypesKey,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
 	labelForPost,
@@ -43,7 +44,7 @@ function usePostTypeLabels( postTypes ) {
 		const postTypeObject = select( 'core' ).getPostType( slug );
 
 		return [ slug, postTypeObject?.labels?.singular_name || postTypeObject?.name || slug ];
-	} ) ), [ postTypes.join( ',' ) ] ); // eslint-disable-line react-hooks/exhaustive-deps
+	} ) ), [ getPostTypesKey( postTypes ) ] ); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
 /**
@@ -72,8 +73,7 @@ function PostList( props ) {
 
 	const postTypes = toPostTypes( postType );
 
-	// Stable dependency for the list of post types.
-	const postTypesKey = postTypes.join( ',' );
+	const postTypesKey = getPostTypesKey( postTypes );
 
 	const postTypeLabels = usePostTypeLabels( postTypes );
 
@@ -356,7 +356,7 @@ function BrowsePanel( props ) {
 		if ( ! postTypes.includes( selectedPostType ) ) {
 			setSelectedPostType( postTypes[ 0 ] );
 		}
-	}, [ postTypes.join( ',' ), selectedPostType ] ); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [ getPostTypesKey( postTypes ), selectedPostType ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
 	 * Helper function to update tax query for a taxonomy.

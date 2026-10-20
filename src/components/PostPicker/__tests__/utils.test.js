@@ -1,5 +1,6 @@
 import {
 	getApplicableTaxonomies,
+	getPostTypesKey,
 	getSelectionIdsKey,
 	getSelectionQueryArgs,
 	labelForPost,
@@ -28,6 +29,40 @@ describe( 'toPostTypes', () => {
 
 	it( 'should preserve the order, because the first slug is the default', () => {
 		expect( toPostTypes( [ 'page', 'post' ] )[ 0 ] ).toBe( 'page' );
+	} );
+} );
+
+describe( 'getPostTypesKey', () => {
+
+	it( 'should produce the same key whatever order the types arrive in', () => {
+		// A consumer that collects types as they are picked can hand us either.
+		expect( getPostTypesKey( [ 'post', 'page' ] ) ).toBe( getPostTypesKey( [ 'page', 'post' ] ) );
+	} );
+
+	it( 'should sort the key', () => {
+		expect( getPostTypesKey( [ 'post', 'page' ] ) ).toBe( 'page,post' );
+	} );
+
+	it( 'should not reorder the array it is given', () => {
+		// The first entry is the type the picker opens on, so it must survive.
+		const postTypes = [ 'post', 'opinion' ];
+
+		getPostTypesKey( postTypes );
+
+		expect( postTypes ).toEqual( [ 'post', 'opinion' ] );
+		expect( postTypes[ 0 ] ).toBe( 'post' );
+	} );
+
+	it( 'should produce a different key when a type is added or removed', () => {
+		const before = getPostTypesKey( [ 'post', 'page' ] );
+
+		expect( getPostTypesKey( [ 'post', 'page', 'opinion' ] ) ).not.toBe( before );
+		expect( getPostTypesKey( [ 'post' ] ) ).not.toBe( before );
+	} );
+
+	it( 'should handle a single type and an empty list', () => {
+		expect( getPostTypesKey( [ 'post' ] ) ).toBe( 'post' );
+		expect( getPostTypesKey( [] ) ).toBe( '' );
 	} );
 } );
 

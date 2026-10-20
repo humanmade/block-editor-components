@@ -39,6 +39,25 @@ export function labelForPost( post, postTypeLabels ) {
 }
 
 /**
+ * Stable dependency key for a list of post type slugs.
+ *
+ * A hook cannot depend on an array — a literal has a fresh identity every
+ * render — so the slugs are reduced to a primitive. Sorted first because the
+ * consumer's order is presentation only: a picker given `post,page` and one
+ * given `page,post` are the same query, and an order-sensitive key would
+ * refetch and cache them twice.
+ *
+ * Only the key is sorted. The array itself keeps the consumer's order, whose
+ * first entry is the post type the picker opens on.
+ *
+ * @param {string[]} postTypes Post type slugs.
+ * @returns {string} Comma separated slugs, sorted.
+ */
+export function getPostTypesKey( postTypes ) {
+	return [ ...postTypes ].sort().join( ',' );
+}
+
+/**
  * Canonical, display-order-independent key for a set of selected IDs.
  *
  * Reordering the selection must not look like a new query — the order is

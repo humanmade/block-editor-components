@@ -640,12 +640,10 @@ export function PostPickerModal( props ) {
 
 	const footerRef = useRef();
 
-	// A sticky element is clamped to its containing block's content box, so the
-	// footer stops short of the modal frame by the scroll container's own
-	// bottom padding, leaving a strip the list scrolls through. Reclaim it with
-	// a negative margin — read at runtime, because the padding has changed
-	// between @wordpress/components versions and this package builds against
-	// whichever one the site provides.
+	// The modal's scroll container carries its own bottom padding, which insets
+	// where a sticky footer comes to rest. Measured at runtime rather than
+	// hardcoded: the padding has changed between @wordpress/components
+	// versions, and this package builds against whichever one the site has.
 	const [ scrollPaddingBottom, setScrollPaddingBottom ] = useState( 0 );
 
 	useEffect( () => {
@@ -758,16 +756,19 @@ export function PostPickerModal( props ) {
 					ref={ footerRef }
 					style={ {
 						position: 'sticky',
-						bottom: 0,
 						zIndex: 1,
 						background: '#fff',
 						marginTop: 24,
 						paddingTop: 16,
 						borderTop: '1px solid #ddd',
-						// Extend over the scroll container's bottom padding, and
-						// pad by the same amount so the buttons keep their gap
-						// from the frame edge.
-						marginBottom: -scrollPaddingBottom,
+						// A sticky inset resolves against the scroll container's
+						// content box, so `bottom: 0` would stop short of the
+						// frame by that container's own bottom padding and let
+						// the list show through the gap. Overshoot by the same
+						// amount, and pad by it too so the buttons keep their
+						// distance from the frame edge. The inset only applies
+						// while stuck, so the end of the list is unaffected.
+						bottom: -scrollPaddingBottom,
 						paddingBottom: 16 + scrollPaddingBottom,
 					} }
 				>

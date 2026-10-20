@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useMemo } from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import {
 	Button,
@@ -564,6 +564,31 @@ function selectionCountLabel( count, maxItems ) {
 }
 
 /**
+ * The nearest scrollable ancestor of a node.
+ *
+ * Found by computed overflow rather than by class name, so it survives core
+ * renaming the modal's content element.
+ *
+ * @param {?HTMLElement} node Node to search up from.
+ * @returns {?HTMLElement} The scroll container, or null if there is none.
+ */
+function getScrollParent( node ) {
+	let element = node?.parentElement;
+
+	while ( element ) {
+		const { overflowY } = window.getComputedStyle( element );
+
+		if ( overflowY === 'auto' || overflowY === 'scroll' ) {
+			return element;
+		}
+
+		element = element.parentElement;
+	}
+
+	return null;
+}
+
+/**
  * Post Picker Modal Component.
  *
  * @param {object} props Props.
@@ -612,6 +637,28 @@ export function PostPickerModal( props ) {
 	);
 
 	const isOverLimit = !! maxItems && selection.length > maxItems;
+
+	const footerRef = useRef();
+
+	// A sticky element is clamped to its containing block's content box, so the
+	// footer stops short of the modal frame by the scroll container's own
+	// bottom padding, leaving a strip the list scrolls through. Reclaim it with
+	// a negative margin — read at runtime, because the padding has changed
+	// between @wordpress/components versions and this package builds against
+	// whichever one the site provides.
+	const [ scrollPaddingBottom, setScrollPaddingBottom ] = useState( 0 );
+
+	useEffect( () => {
+		const scrollParent = getScrollParent( footerRef.current );
+
+		if ( ! scrollParent ) {
+			return;
+		}
+
+		setScrollPaddingBottom(
+			parseFloat( window.getComputedStyle( scrollParent ).paddingBottom ) || 0
+		);
+	}, [] );
 
 	const closeModal = () => setModalOpen( false );
 
@@ -707,16 +754,23 @@ export function PostPickerModal( props ) {
 				  the last row is never covered.
 				*/ }
 			{ ( deferChanges || !! maxItems ) && (
-				<div style={ {
-					position: 'sticky',
-					bottom: 0,
-					zIndex: 1,
-					background: '#fff',
-					marginTop: 24,
-					paddingTop: 16,
-					paddingBottom: 16,
-					borderTop: '1px solid #ddd',
-				} }>
+				<div
+					ref={ footerRef }
+					style={ {
+						position: 'sticky',
+						bottom: 0,
+						zIndex: 1,
+						background: '#fff',
+						marginTop: 24,
+						paddingTop: 16,
+						borderTop: '1px solid #ddd',
+						// Extend over the scroll container's bottom padding, and
+						// pad by the same amount so the buttons keep their gap
+						// from the frame edge.
+						marginBottom: -scrollPaddingBottom,
+						paddingBottom: 16 + scrollPaddingBottom,
+					} }
+				>
 					{ isOverLimit && (
 						<Notice
 							isDismissible={ false }
